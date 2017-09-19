@@ -92,6 +92,7 @@
                               <MenuItem mnemonicParsing="false" onAction="#onFilterClearMenuItem" text="Show All" />
                               <SeparatorMenuItem mnemonicParsing="false" />
                               <CheckMenuItem fx:id="filterFavoritesMenuItem" mnemonicParsing="false" onAction="#onFilterFavoritesMenuItem" text="Favorites" />
+                              <CheckMenuItem fx:id="filterMissingMenuItem" mnemonicParsing="false" onAction="#onFilterMissingMenuItem" text="Missing" />
                               <SeparatorMenuItem mnemonicParsing="false" />
                               <RadioMenuItem fx:id="filterTaggedMenuItem" mnemonicParsing="false" onAction="#onFilterTaggedMenuItem" text="Tagged">
                                  <toggleGroup>

@@ -81,6 +81,8 @@ public class Photo extends Observable {
     public long getLastModified() { return lastModified; }
     public long getFileSize() { return fileSize; }
     public int getHash() { return hash; }
+    public boolean isMissing() { return missing; }
+    public boolean isInvalid() { return invalid; }
 
     public String getCaption() { return caption; }
     public  void setCaption(String val) { 

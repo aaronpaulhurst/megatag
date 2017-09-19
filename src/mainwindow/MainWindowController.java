@@ -71,7 +71,6 @@ public class MainWindowController implements Initializable, ItemController {
         // ----
         
         tagWindow = new Popup();
-        // tagWindow.initStyle(StageStyle.UNDECORATED);
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../mainwindow/TagWindow.fxml"));
@@ -103,6 +102,7 @@ public class MainWindowController implements Initializable, ItemController {
     @FXML MenuItem removeMenuItem;
     @FXML MenuItem clearAllTagsMenuItem;
     @FXML CheckMenuItem filterFavoritesMenuItem;
+    @FXML CheckMenuItem filterMissingMenuItem;
     @FXML RadioMenuItem filterTaggedMenuItem;
     @FXML RadioMenuItem filterUntaggedMenuItem;
     @FXML RadioMenuItem filterDuplicatedMenuItem;
@@ -377,6 +377,12 @@ public class MainWindowController implements Initializable, ItemController {
     @FXML private void onFilterFavoritesMenuItem(ActionEvent e) {     
         // Update DB view
         dbview.filterFavorites = filterFavoritesMenuItem.isSelected();
+        dbview.update(db, null);
+    }
+    
+    @FXML private void onFilterMissingMenuItem(ActionEvent e) {     
+        // Update DB view
+        dbview.filterMissing = filterMissingMenuItem.isSelected();
         dbview.update(db, null);
     }
     

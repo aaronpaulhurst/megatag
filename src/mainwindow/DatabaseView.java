@@ -25,6 +25,7 @@ public class DatabaseView implements Observer {
     ObservableList<Photo> rows = FXCollections.observableArrayList();
         
     public boolean filterFavorites = false;
+    public boolean filterMissing = false;
     public boolean filterTagged = false;
     public boolean filterUntagged = false;
     public boolean filterDuplicated = false;
@@ -71,6 +72,9 @@ public class DatabaseView implements Observer {
             return true;
         }
         if (filterDuplicated && (p.getDb().numDuplicates(p) <= 1)) {
+            return true;
+        } 
+        if (filterMissing && !p.isMissing()) {
             return true;
         } 
         if (filterExtraCopies && p.getDb().isCanonicalCopy(p)) {
