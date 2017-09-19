@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="Infinity" maxWidth="Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mainwindow.MainWindowController">
+   <children>
+      <BorderPane maxHeight="Infinity" maxWidth="Infinity" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <bottom>
+            <HBox maxHeight="25.0" maxWidth="Infinity" minHeight="25.0" prefHeight="25.0" styleClass="grey-message-box" stylesheets="@../application/application.css" BorderPane.alignment="CENTER">
+               <children>
+                  <Label fx:id="messageLabel" maxHeight="1.7976931348623157E308">
+                     <padding>
+                        <Insets top="5.0" />
+                     </padding>
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin>
+            </HBox>
+         </bottom>
+         <center>
+            <ListView fx:id="listView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onKeyPressed="#onKeyPressed" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <padding>
+                  <Insets top="2.0" />
+               </padding>
+            </ListView>
+         </center>
+         <top>
+            <VBox BorderPane.alignment="CENTER">
+               <children>
+                  <MenuBar fx:id="mainMenuBar" maxWidth="Infinity">
+                    <menus>
+                      <Menu fx:id="fileMenu" mnemonicParsing="false" text="File">
+                        <items>
+                              <MenuItem mnemonicParsing="false" onAction="#onOpenFilesMenuItem" text="Open Files...">
+                                 <accelerator>
+                                    <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                 </accelerator>
+                              </MenuItem>
+                              <MenuItem mnemonicParsing="false" onAction="#onOpenDirectoryMenuItem" text="Open Directory...">
+                                 <accelerator>
+                                    <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="DOWN" shortcut="DOWN" />
+                                 </accelerator>
+                              </MenuItem>
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <MenuItem mnemonicParsing="false" onAction="#onSaveMenuItem" text="Save">
+                                 <accelerator>
+                                    <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                 </accelerator>
+                              </MenuItem>
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                          <MenuItem fx:id="quitMenuItem" mnemonicParsing="false" onAction="#onQuitMenuItem" text="Quit">
+                                 <accelerator>
+                                    <KeyCodeCombination alt="UP" code="Q" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                 </accelerator>
+                              </MenuItem>
+                        </items>
+                      </Menu>
+                      <Menu fx:id="editMenu" mnemonicParsing="false" text="Edit">
+                        <items>
+                              <MenuItem fx:id="selectAllMenuItem" mnemonicParsing="false" onAction="#onSelectAllMenuItem" text="Select All">
+                                 <accelerator>
+                                    <KeyCodeCombination alt="UP" code="A" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                                 </accelerator>
+                              </MenuItem>
+                              <MenuItem fx:id="selectNoneMenuItem" mnemonicParsing="false" onAction="#onSelectNoneMenuItem" text="Select None">
+                                 <accelerator>
+                                    <KeyCodeCombination alt="UP" code="A" control="UP" meta="UP" shift="DOWN" shortcut="DOWN" />
+                                 </accelerator>
+                              </MenuItem>
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                          <MenuItem fx:id="removeMenuItem" mnemonicParsing="false" onAction="#onRemoveMenuItem" text="Delete" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <MenuItem fx:id="rotateLeftMenuItem" mnemonicParsing="false" onAction="#onRotateLeftMenuItem" text="Rotate Left" />
+                              <MenuItem fx:id="rotateRightMenuItem" mnemonicParsing="false" onAction="#onRotateRightMenuItem" text="Rotate Right" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <MenuItem fx:id="clearAllTagsMenuItem" mnemonicParsing="false" onAction="#onClearAllTagsMenuItem" text="Clear All Tags" />
+                        </items>
+                      </Menu>
+                        <Menu fx:id="filterMenu" mnemonicParsing="false" text="Filter">
+                           <items>
+                              <MenuItem mnemonicParsing="false" onAction="#onFilterClearMenuItem" text="Show All" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <CheckMenuItem fx:id="filterFavoritesMenuItem" mnemonicParsing="false" onAction="#onFilterFavoritesMenuItem" text="Favorites" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <RadioMenuItem fx:id="filterTaggedMenuItem" mnemonicParsing="false" onAction="#onFilterTaggedMenuItem" text="Tagged">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="Tagged" />
+                                 </toggleGroup>
+                              </RadioMenuItem>
+                              <RadioMenuItem fx:id="filterUntaggedMenuItem" mnemonicParsing="false" onAction="#onFilterUntaggedMenuItem" text="Untagged" toggleGroup="$Tagged" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <RadioMenuItem fx:id="filterDuplicatedMenuItem" mnemonicParsing="false" onAction="#onFilterDuplicatedMenuItem" text="Duplicated (All Copies)">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="Duplicated" />
+                                 </toggleGroup>
+                              </RadioMenuItem>
+                              <RadioMenuItem fx:id="filterExtraCopiesMenuItem" mnemonicParsing="false" onAction="#onFilterExtraCopiesMenuItem" text="Duplicated (Extra Copies Only)" toggleGroup="$Duplicated" />
+                           </items>
+                        </Menu>
+                        <Menu fx:id="sortMenu" mnemonicParsing="false" text="Sort">
+                           <items>
+                              <RadioMenuItem mnemonicParsing="false" onAction="#onSortAscending" selected="true" text="Ascending">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="Direction" />
+                                 </toggleGroup>
+                              </RadioMenuItem>
+                              <RadioMenuItem mnemonicParsing="false" onAction="#onSortDescending" text="Desceding" toggleGroup="$Direction" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <MenuItem fx:id="sortFilenameMenuItem" mnemonicParsing="false" onAction="#onSortFilenameMenuItem" text="Order: Filename" />
+                              <MenuItem fx:id="sortOrderAddedMenuItem" mnemonicParsing="false" onAction="#onSortOrderAddedMenuItem" text="Order: Added" />
+                              <MenuItem fx:id="sortFavoritesMenuItem" mnemonicParsing="false" onAction="#onSortFavoritesMenuItem" text="Order: Favorites" />
+                              <MenuItem fx:id="sortTagsMenuItem" mnemonicParsing="false" onAction="#onSortTagsMenuItem" text="Order: Tags" />
+                              <MenuItem fx:id="onSortLastModifiedMenuItem" mnemonicParsing="false" onAction="#onSortLastModifiedMenuItem" text="Order: Last Modified" />
+                              <MenuItem fx:id="onSortFileSizeMenuItem" mnemonicParsing="false" onAction="#onSortFileSizeMenuItem" text="Order: File Size" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <MenuItem mnemonicParsing="false" onAction="#onGroupDuplicatedMenuItem" text="Group Duplicates" />
+                           </items>
+                        </Menu>
+                    </menus>
+                  </MenuBar>
+                  <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="grey-message-box" stylesheets="@../application/application.css">
+                     <children>
+                        <Pane maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="cancelFindTagButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCancelFindTagButton" prefHeight="20.0" prefWidth="20.0" styleClass="minus-button" stylesheets="@../application/application.css" text="-" visible="false">
+                           <padding>
+                              <Insets top="-2.0" />
+                           </padding>
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" text="Find Tag:" HBox.hgrow="NEVER">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Label>
+                        <MenuButton fx:id="tagMenuButton" mnemonicParsing="false" onAction="#onTagMenuButton" onMouseDragEntered="#onTagMenuMouseEntered" onMouseEntered="#onTagMenuMouseEntered" text="..." HBox.hgrow="NEVER">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </MenuButton>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </top>
+      </BorderPane>
+   </children>
+</AnchorPane>

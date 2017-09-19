@@ -1,0 +1,25 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+
+.grey-message-box {
+    -fx-background-color: #DDDDDD;
+}
+
+.popup-background {
+	-fx-background-color:white;
+	-fx-border-color: grey;
+	-fx-border-width:1;
+}
+
+.plus-button {
+	-fx-background-color: #99DD99;
+	-fx-padding: -2,0,0,0;
+	-fx-pref-width: 20;
+	-fx-pref-height: 20;	
+}
+
+.minus-button {
+	-fx-background-color: #DD9999;
+	-fx-padding: -2,0,0,0;
+	-fx-pref-width: 20;
+	-fx-pref-height: 20;
+}

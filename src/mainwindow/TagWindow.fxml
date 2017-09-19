@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="rootPane" styleClass="popup-background" stylesheets="@../application/application.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mainwindow.TagWindowController">
+   <children>
+      <VBox prefWidth="150.0">
+         <children>
+            <HBox alignment="CENTER_LEFT" prefWidth="177.0" spacing="5.0" VBox.vgrow="NEVER">
+               <children>
+                  <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onAddNewTagButton" prefHeight="20.0" prefWidth="20.0" styleClass="plus-button" text="+" textAlignment="CENTER" HBox.hgrow="NEVER">
+                     <HBox.margin>
+                        <Insets bottom="5.0" />
+                     </HBox.margin>
+                     <padding>
+                        <Insets top="-2.0" />
+                     </padding>
+                  </Button>
+                  <TextField fx:id="addNewTagField" onAction="#onAddNewTagField" promptText="Add new tag...">
+                     <HBox.margin>
+                        <Insets bottom="5.0" />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+            </HBox>
+            <Separator prefWidth="200.0" />
+            <VBox fx:id="curTags" spacing="5.0" />
+            <VBox fx:id="newTags" spacing="5.0" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </VBox>
+   </children>
+</AnchorPane>
