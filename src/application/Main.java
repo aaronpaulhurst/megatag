@@ -33,7 +33,7 @@ public class Main extends Application {
 	        primaryStage.setScene(
 	            new Scene(
 	                FXMLLoader.load(getClass().getResource("../mainwindow/MainWindow.fxml")),
-	                600, 400) );
+	                900, 600) );
 	    } catch (IOException e) {
 	        // Fail hard
 	        System.out.println("FXML Error: " + e.toString());

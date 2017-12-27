@@ -426,7 +426,7 @@ public class MainWindowController implements Initializable, ItemController {
             
             if (e.getButton().equals(MouseButton.PRIMARY)) {
                 if(e.getClickCount() == 2) {
-                    imageWindowController.setImage(iv.getImageInfo());
+                    imageWindowController.setImage(iv.getPhoto());
                     imageWindow.show();
                 }
             }
@@ -435,7 +435,7 @@ public class MainWindowController implements Initializable, ItemController {
     public void onFavoriteMouseClick(MouseEvent e, ItemView view) {
         
         // Get current button state
-        boolean newState = !view.getImageInfo().isFavorite();
+        boolean newState = !view.getPhoto().isFavorite();
         
         // Multiple selections?  Confirm.
         int numSelected = listView.getSelectionModel().getSelectedItems().size();
@@ -455,16 +455,38 @@ public class MainWindowController implements Initializable, ItemController {
         
         else {
             // Modify only image that the button belonged to.
-            view.getImageInfo().setFavorite(newState);
+            view.getPhoto().setFavorite(newState);
         }
         
         e.consume();
     }
     
     public void onTagMouseClick(MouseEvent e, ItemView view) {
-        tagWindowController.setModel(view.getImageInfo());
+        tagWindowController.setModel(view.getPhoto());
         tagWindow.show(getWindow(), e.getScreenX(), e.getScreenY());
         e.consume();
+    }
+    
+    public void onAddCaptionMousePressed(MouseEvent e, ItemView view) {
+
+        if (view.isEditCaptionEnabled()) {
+            view.setEditCaptionEnabled(false);
+        } else {
+            view.setEditCaptionEnabled(true);
+        }
+            
+        e.consume();
+    }
+    
+    public void onAddCaptionTextField(ActionEvent e, ItemView view) {
+        if (e.getSource() instanceof TextField) {
+            TextField src = (TextField)e.getSource();
+            
+            view.getPhoto().setCaption(src.getText());
+            view.setEditCaptionEnabled(false);
+            
+            e.consume();
+        }
     }
     
     // ---- Actions ----
