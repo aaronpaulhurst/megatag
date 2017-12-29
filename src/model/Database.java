@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.*;
 
 public class Database extends Observable {
     
-    final static String EXTENSIONS[] = {"jpg"};
+    final static String EXTENSIONS[] = {"jpg", "JPG", "jpeg", "JPEG"};
     
     public static boolean isImageExtension(String file) {
         for(String suffix : EXTENSIONS) {
