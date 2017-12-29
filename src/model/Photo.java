@@ -77,9 +77,12 @@ public class Photo extends Observable {
 
     public String getCaption() { return caption; }
     public  void setCaption(String val) { 
-        caption = val; 
+        caption = val;
         setChanged();
         notifyObservers();
+        if (db != null) {
+            db.setChangedSinceSave();
+        }
     }
     
     public boolean isFavorite() { return favorite; }
@@ -87,6 +90,9 @@ public class Photo extends Observable {
         favorite = val;        
         setChanged();
         notifyObservers();
+        if (db != null) {
+            db.setChangedSinceSave();
+        }
     }
     
     public int getRotation() { return rotation; }
@@ -94,6 +100,9 @@ public class Photo extends Observable {
         rotation = angle;        
         setChanged();
         notifyObservers();
+        if (db != null) {
+            db.setChangedSinceSave();
+        }
     }
     
     public List<String> getTags() { return tags; }
@@ -105,6 +114,7 @@ public class Photo extends Observable {
         tags.add(tag);
         setChanged();
         notifyObservers();
+        db.setChangedSinceSave();
     }
     public void removeTag(String tag) { 
         if (!tags.contains(tag)) {
@@ -114,6 +124,7 @@ public class Photo extends Observable {
         tags.remove(tag);
         setChanged();
         notifyObservers();
+        db.setChangedSinceSave();
     }
     public void removeAllTags() {
         for(String tag: tags) {
@@ -122,5 +133,6 @@ public class Photo extends Observable {
         tags.clear();
         setChanged();
         notifyObservers();
+        db.setChangedSinceSave();
     }
 }

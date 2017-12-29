@@ -35,6 +35,7 @@ public class Database extends Observable {
     ArrayList<File> searchRoots = new ArrayList<File>();
     
     Collection<Photo> images = new HashSet<Photo>();
+    boolean modified = false;
     
     class Deduplication implements Comparable {
         Photo canonical;
@@ -173,6 +174,7 @@ public class Database extends Observable {
             }
         }
                
+        setChangedSinceSave();
         setChanged();
         notifyObservers();
     }
@@ -241,6 +243,7 @@ public class Database extends Observable {
             images.add(p);  
             addToDeduplication(p);
         }
+        setChangedSinceSave();
         setChanged();
     }
     
@@ -248,5 +251,17 @@ public class Database extends Observable {
         // TODO
         
         notifyObservers();
+    }
+    
+    // Called if when any image in the database has been modified.
+    
+    public void setChangedSinceSave() {
+        modified = true;
+    }
+    public void clearChangedSinceSave() {
+        modified = false;
+    }
+    public boolean wasChangedSinceSave() {
+        return modified;
     }
 }

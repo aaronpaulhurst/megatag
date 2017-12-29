@@ -137,16 +137,18 @@ public class MainWindowController implements Initializable, ItemController {
         // Ensure that we record any in-progress edits.
         endCaptionEditing();
         
-        Alert alert = new Alert( 
-                AlertType.CONFIRMATION, 
-                "Save before quitting?", 
-                ButtonType.YES, ButtonType.NO);
-        alert.showAndWait();
+        if (db.wasChangedSinceSave()) {
+            Alert alert = new Alert( 
+                    AlertType.CONFIRMATION, 
+                    "Save before quitting?", 
+                    ButtonType.YES, ButtonType.NO);
+            alert.showAndWait();
 
-        if (alert.getResult() != ButtonType.YES) {
-            save();
+            if (alert.getResult() != ButtonType.YES) {
+                save();
+            }
         }
-        
+
         Main.exit();
     }
     
@@ -598,6 +600,7 @@ public class MainWindowController implements Initializable, ItemController {
     private void save() {
         try (FileOutputStream os = new FileOutputStream(Main.DB_FILE)) {            
             db.write(os);
+            db.clearChangedSinceSave();
         } catch (IOException ex) {
             Alert a = new Alert(AlertType.ERROR);
             a.setContentText("Failed to save database");
