@@ -103,10 +103,11 @@ public class MainWindowController implements Initializable, ItemController {
     @FXML MenuItem clearAllTagsMenuItem;
     @FXML CheckMenuItem filterFavoritesMenuItem;
     @FXML CheckMenuItem filterMissingMenuItem;
-    @FXML RadioMenuItem filterTaggedMenuItem;
-    @FXML RadioMenuItem filterUntaggedMenuItem;
-    @FXML RadioMenuItem filterDuplicatedMenuItem;
-    @FXML RadioMenuItem filterExtraCopiesMenuItem;
+    @FXML CheckMenuItem filterTaggedMenuItem;
+    @FXML CheckMenuItem filterUntaggedMenuItem;
+    @FXML CheckMenuItem filterDuplicatedMenuItem;
+    @FXML CheckMenuItem filterExtraCopiesMenuItem;
+    @FXML CheckMenuItem filterHideExtrasMenuItem;
     @FXML Label messageLabel;
     
     // ----- Parent/Child Views -----
@@ -362,13 +363,20 @@ public class MainWindowController implements Initializable, ItemController {
     }
      
     @FXML private void onFilterClearMenuItem(ActionEvent e) {     
-        // Update DB view
+        // Unselect all menu items and reset DB view
         dbview.filterFavorites = false;
         filterFavoritesMenuItem.setSelected(false);
-        dbview.filterDuplicated = false;
+
+        dbview.filterFavorites = false;
+        filterFavoritesMenuItem.setSelected(false);
+        
+        dbview.filterOnlyDuplicated = false;
         filterDuplicatedMenuItem.setSelected(false);
-        dbview.filterExtraCopies = false;
+        dbview.filterOnlyExtraCopies = false;
         filterExtraCopiesMenuItem.setSelected(false);
+        dbview.filterHideExtraCopies = false;
+        filterHideExtrasMenuItem.setSelected(false);
+        
         dbview.filterTagged = false;
         filterTaggedMenuItem.setSelected(false);
         dbview.filterUntagged = false;
@@ -389,32 +397,59 @@ public class MainWindowController implements Initializable, ItemController {
         dbview.update(db, null);
     }
     
-    @FXML private void onFilterDuplicatedMenuItem(ActionEvent e) {     
-        // Update DB view
-        dbview.filterDuplicated = filterDuplicatedMenuItem.isSelected();
-        dbview.filterExtraCopies = filterExtraCopiesMenuItem.isSelected();
+    // Helper
+    private void doFilterDuplicatesRadioGroup(ActionEvent e) {
+        // Behave as a unselectable radio group
+        if (filterDuplicatedMenuItem != e.getSource()) {
+            filterDuplicatedMenuItem.setSelected(false);
+        }
+        if (filterExtraCopiesMenuItem != e.getSource()) {
+            filterExtraCopiesMenuItem.setSelected(false);
+        }
+        if (filterHideExtrasMenuItem != e.getSource()) {
+            filterHideExtrasMenuItem.setSelected(false);
+        }
+        // Update DB view     
+        dbview.filterOnlyDuplicated  = filterDuplicatedMenuItem.isSelected();
+        dbview.filterOnlyExtraCopies = filterExtraCopiesMenuItem.isSelected();
+        dbview.filterHideExtraCopies = filterHideExtrasMenuItem.isSelected();
         dbview.update(db, null);
     }
     
+    @FXML private void onFilterDuplicatedMenuItem(ActionEvent e) {
+        doFilterDuplicatesRadioGroup(e);
+    }
+
     @FXML private void onFilterExtraCopiesMenuItem(ActionEvent e) {     
-        // Update DB view
-        dbview.filterDuplicated = filterDuplicatedMenuItem.isSelected();
-        dbview.filterExtraCopies = filterExtraCopiesMenuItem.isSelected();
+        doFilterDuplicatesRadioGroup(e);
+    }
+    
+    @FXML private void onFilterHideExtrasMenuItem(ActionEvent e) {     
+        doFilterDuplicatesRadioGroup(e);
+    }
+
+    // Helper
+    private void doFilterTagsRadioGroup(ActionEvent e) {
+        // Behave as a unselectable radio group
+        if (filterTaggedMenuItem != e.getSource()) {
+            filterTaggedMenuItem.setSelected(false);
+        }
+        if (filterUntaggedMenuItem != e.getSource()) {
+            filterUntaggedMenuItem.setSelected(false);
+        }
+
+        // Update DB view     
+        dbview.filterTagged = filterTaggedMenuItem.isSelected();
+        dbview.filterUntagged = filterUntaggedMenuItem.isSelected();
         dbview.update(db, null);
     }
     
     @FXML private void onFilterTaggedMenuItem(ActionEvent e) {     
-        // Update DB view
-        dbview.filterTagged = filterTaggedMenuItem.isSelected();
-        dbview.filterUntagged = filterUntaggedMenuItem.isSelected();
-        dbview.update(db, null);
+        doFilterTagsRadioGroup(e);
     }
     
     @FXML private void onFilterUntaggedMenuItem(ActionEvent e) {     
-        // Update DB view
-        dbview.filterTagged = filterTaggedMenuItem.isSelected();
-        dbview.filterUntagged = filterUntaggedMenuItem.isSelected();
-        dbview.update(db, null);
+        doFilterTagsRadioGroup(e);
     }
     
     // ---- ItemController interface ----

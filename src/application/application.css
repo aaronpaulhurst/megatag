@@ -14,11 +14,13 @@
 	-fx-background-color: #99DD99;
 	-fx-padding: -2,0,0,0;
 	-fx-pref-width: 20;
-	-fx-pref-height: 20;	
+	-fx-pref-height: 20;
 }
 
 .minus-button {
-	-fx-background-color: #DD9999;
+	-fx-background-color:
+	        #DD9999,
+            linear-gradient(#CC8888, #EEAAAA);
 	-fx-padding: -2,0,0,0;
 	-fx-pref-width: 20;
 	-fx-pref-height: 20;
@@ -32,3 +34,10 @@
 	-fx-effect: dropshadow( three-pass-box , darkgray, 10, 0.0, 0, 0 );
 }
 
+/* Used for headers of the main window columns. */
+.column-header {
+	-fx-border-radius: 0;
+    -fx-border-color: #888888;
+    -fx-background-color: #CCCCCC;
+    -fx-effect: dropshadow( three-pass-box, rgba(0,0,0,0.6), 10, 0.0, 0, 2);
+}

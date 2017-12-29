@@ -92,7 +92,7 @@ public class ItemView extends ListCell<Photo> implements Observer {
         assert(tagImage != null);
         assert(untaggedImage != null);
         assert(firstCopyImage != null);
-        assert(copiesImage != null);
+        assert(copiesImage != null );
         assert(editCaptionImage != null);
 
         controller = c;

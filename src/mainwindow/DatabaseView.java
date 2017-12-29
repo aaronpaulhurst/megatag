@@ -28,8 +28,9 @@ public class DatabaseView implements Observer {
     public boolean filterMissing = false;
     public boolean filterTagged = false;
     public boolean filterUntagged = false;
-    public boolean filterDuplicated = false;
-    public boolean filterExtraCopies = false;
+    public boolean filterOnlyDuplicated = false;
+    public boolean filterOnlyExtraCopies = false;
+    public boolean filterHideExtraCopies = false;
     public String filterTag = null;
     
     private Comparator<Photo> sort = null;
@@ -71,15 +72,18 @@ public class DatabaseView implements Observer {
         if (filterTag != null && !p.getTags().contains(filterTag)) {
             return true;
         }
-        if (filterDuplicated && (p.getDb().numDuplicates(p) <= 1)) {
+        if (filterOnlyDuplicated && (p.getDb().numDuplicates(p) <= 1)) {
             return true;
         } 
         if (filterMissing && !p.isMissing()) {
             return true;
         } 
-        if (filterExtraCopies && p.getDb().isCanonicalCopy(p)) {
+        if (filterOnlyExtraCopies && p.getDb().isCanonicalCopy(p)) {
             return true;
-        } 
+        }
+        if (filterHideExtraCopies && !p.getDb().isCanonicalCopy(p)) {
+            return true;
+        }
         return false;
     }
     

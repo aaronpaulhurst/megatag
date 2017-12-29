@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="Infinity" maxWidth="Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mainwindow.MainWindowController">
+<AnchorPane maxHeight="Infinity" maxWidth="Infinity" prefHeight="508.0" prefWidth="570.0" stylesheets="@../application/application.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mainwindow.MainWindowController">
    <children>
       <BorderPane maxHeight="Infinity" maxWidth="Infinity" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <bottom>
@@ -28,13 +28,6 @@
                </BorderPane.margin>
             </HBox>
          </bottom>
-         <center>
-            <ListView fx:id="listView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onKeyPressed="#onKeyPressed" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-               <padding>
-                  <Insets top="2.0" />
-               </padding>
-            </ListView>
-         </center>
          <top>
             <VBox BorderPane.alignment="CENTER">
                <children>
@@ -91,22 +84,15 @@
                            <items>
                               <MenuItem mnemonicParsing="false" onAction="#onFilterClearMenuItem" text="Show All" />
                               <SeparatorMenuItem mnemonicParsing="false" />
-                              <CheckMenuItem fx:id="filterFavoritesMenuItem" mnemonicParsing="false" onAction="#onFilterFavoritesMenuItem" text="Favorites" />
-                              <CheckMenuItem fx:id="filterMissingMenuItem" mnemonicParsing="false" onAction="#onFilterMissingMenuItem" text="Missing" />
+                              <CheckMenuItem fx:id="filterFavoritesMenuItem" mnemonicParsing="false" onAction="#onFilterFavoritesMenuItem" text="Favorites Only" />
+                              <CheckMenuItem fx:id="filterMissingMenuItem" mnemonicParsing="false" onAction="#onFilterMissingMenuItem" text="Missing Only" />
                               <SeparatorMenuItem mnemonicParsing="false" />
-                              <RadioMenuItem fx:id="filterTaggedMenuItem" mnemonicParsing="false" onAction="#onFilterTaggedMenuItem" text="Tagged">
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="Tagged" />
-                                 </toggleGroup>
-                              </RadioMenuItem>
-                              <RadioMenuItem fx:id="filterUntaggedMenuItem" mnemonicParsing="false" onAction="#onFilterUntaggedMenuItem" text="Untagged" toggleGroup="$Tagged" />
+                              <CheckMenuItem fx:id="filterTaggedMenuItem" mnemonicParsing="false" onAction="#onFilterTaggedMenuItem" text="Tagged Only" />
+                              <CheckMenuItem fx:id="filterUntaggedMenuItem" mnemonicParsing="false" onAction="#onFilterUntaggedMenuItem" text="Untagged Only" />
                               <SeparatorMenuItem mnemonicParsing="false" />
-                              <RadioMenuItem fx:id="filterDuplicatedMenuItem" mnemonicParsing="false" onAction="#onFilterDuplicatedMenuItem" text="Duplicated (All Copies)">
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="Duplicated" />
-                                 </toggleGroup>
-                              </RadioMenuItem>
-                              <RadioMenuItem fx:id="filterExtraCopiesMenuItem" mnemonicParsing="false" onAction="#onFilterExtraCopiesMenuItem" text="Duplicated (Extra Copies Only)" toggleGroup="$Duplicated" />
+                              <CheckMenuItem fx:id="filterHideExtrasMenuItem" mnemonicParsing="false" onAction="#onFilterHideExtrasMenuItem" text="Hide Extra Copies" />
+                              <CheckMenuItem fx:id="filterDuplicatedMenuItem" mnemonicParsing="false" onAction="#onFilterDuplicatedMenuItem" text="Duplicated Only" />
+                              <CheckMenuItem fx:id="filterExtraCopiesMenuItem" mnemonicParsing="false" onAction="#onFilterExtraCopiesMenuItem" text="Extra Copies Only" />
                            </items>
                         </Menu>
                         <Menu fx:id="sortMenu" mnemonicParsing="false" text="Sort">
@@ -130,18 +116,22 @@
                         </Menu>
                     </menus>
                   </MenuBar>
-                  <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="grey-message-box" stylesheets="@../application/application.css">
+                  <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="grey-message-box">
                      <children>
                         <Pane maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
-                        <Button fx:id="cancelFindTagButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCancelFindTagButton" prefHeight="20.0" prefWidth="20.0" styleClass="minus-button" stylesheets="@../application/application.css" text="-" visible="false">
+                        <Button fx:id="cancelFindTagButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCancelFindTagButton" prefHeight="20.0" prefWidth="20.0" text="-" visible="false">
                            <padding>
                               <Insets top="-2.0" />
                            </padding>
                            <HBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </HBox.margin>
+                           <styleClass>
+                              <String fx:value="minus-button" />
+                              <String fx:value="glow-on-hover" />
+                           </styleClass>
                         </Button>
-                        <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" text="Find Tag:" HBox.hgrow="NEVER">
+                        <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" text="Filter by Tag:" HBox.hgrow="NEVER">
                            <HBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </HBox.margin>
@@ -156,6 +146,26 @@
                </children>
             </VBox>
          </top>
+         <center>
+            <VBox BorderPane.alignment="CENTER">
+               <children>
+                  <HBox styleClass="grey-message-box" stylesheets="@../application/application.css">
+                     <children>
+                        <Button focusTraversable="false" minWidth="45.0" mnemonicParsing="false" prefHeight="25.0" styleClass="column-header" text=" " />
+                        <Button focusTraversable="false" minWidth="100.0" mnemonicParsing="false" prefHeight="25.0" styleClass="column-header" text="Photo" />
+                        <Button focusTraversable="false" minWidth="125.0" mnemonicParsing="false" prefHeight="25.0" styleClass="column-header" text="Actions" />
+                        <Button focusTraversable="false" minWidth="200.0" mnemonicParsing="false" prefHeight="25.0" styleClass="column-header" text="Caption" />
+                        <Button focusTraversable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" mnemonicParsing="false" prefHeight="25.0" styleClass="column-header" text="Filename" HBox.hgrow="ALWAYS" />
+                     </children>
+                  </HBox>
+                  <ListView fx:id="listView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onKeyPressed="#onKeyPressed" VBox.vgrow="ALWAYS">
+                     <padding>
+                        <Insets top="2.0" />
+                     </padding>
+                  </ListView>
+               </children>
+            </VBox>
+         </center>
       </BorderPane>
    </children>
 </AnchorPane>
