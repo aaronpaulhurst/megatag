@@ -56,7 +56,7 @@ public class MainWindowController implements Initializable, ItemController {
         imageWindow.setResizable(true);
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../imagewindow/ImageWindow.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("imagewindow/ImageWindow.fxml"));
             imageWindow.setScene(new Scene(loader.load(), 1000, 600));
             
             imageWindowController = (ImageWindowController)loader.getController();
@@ -73,7 +73,7 @@ public class MainWindowController implements Initializable, ItemController {
         tagWindow = new Popup();
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../mainwindow/TagWindow.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("mainwindow/TagWindow.fxml"));
             tagWindow.getContent().add(loader.load());
             tagWindow.setAutoHide( true );
             tagWindow.setHideOnEscape( true );
@@ -133,7 +133,10 @@ public class MainWindowController implements Initializable, ItemController {
     @FXML private void onQuitMenuItem(ActionEvent e) {
         System.out.println("Event: onQuitMenuItem");
         
-        Alert alert = new Alert(
+        // Ensure that we record any in-progress edits.
+        endCaptionEditing();
+        
+        Alert alert = new Alert( 
                 AlertType.CONFIRMATION, 
                 "Save before quitting?", 
                 ButtonType.YES, ButtonType.NO);
@@ -467,18 +470,33 @@ public class MainWindowController implements Initializable, ItemController {
         e.consume();
     }
     
-    public void onAddCaptionMousePressed(MouseEvent e, ItemView view) {
+    // When non-null, the caption that is currently being edited.
+    ItemView captionUnderEdit = null;
+    
+    public void onEditCaptionMousePressed(MouseEvent e, ItemView view) {
 
         if (view.isEditCaptionEnabled()) {
             view.setEditCaptionEnabled(false);
+            captionUnderEdit = null;
         } else {
+            if (captionUnderEdit != null) {
+                captionUnderEdit.setEditCaptionEnabled(false);
+            }
             view.setEditCaptionEnabled(true);
+            captionUnderEdit = view;
         }
             
         e.consume();
     }
     
-    public void onAddCaptionTextField(ActionEvent e, ItemView view) {
+    public void endCaptionEditing() {
+        if (captionUnderEdit != null) {
+            captionUnderEdit.setEditCaptionEnabled(false);
+        }
+        captionUnderEdit = null;
+    }
+    
+    public void onEditCaptionTextField(ActionEvent e, ItemView view) {
         if (e.getSource() instanceof TextField) {
             TextField src = (TextField)e.getSource();
             

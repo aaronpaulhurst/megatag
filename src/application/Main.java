@@ -32,17 +32,17 @@ public class Main extends Application {
 	    try {
 	        primaryStage.setScene(
 	            new Scene(
-	                FXMLLoader.load(getClass().getResource("../mainwindow/MainWindow.fxml")),
+	                FXMLLoader.load(getClass().getClassLoader().getResource("mainwindow/MainWindow.fxml")),
 	                900, 600) );
-	    } catch (IOException e) {
+
+	        primaryStage.setOnCloseRequest(e -> Platform.exit());
+	        primaryStage.setTitle("Megatag");
+	        primaryStage.show();
+	    } catch (Exception e) {
 	        // Fail hard
-	        System.out.println("FXML Error: " + e.toString());
+	        System.out.println("Error: " + e.toString() + " at " + e.getStackTrace().toString());
 	        Main.exit();
 	    }
-	    
-        primaryStage.setOnCloseRequest(e -> Platform.exit());
-        primaryStage.setTitle("Megans Photos");
-        primaryStage.show();
 	}
 	
 	@Override

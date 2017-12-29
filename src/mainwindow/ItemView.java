@@ -5,6 +5,7 @@ import java.util.*;
 
 import javafx.collections.*;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -49,7 +50,7 @@ public class ItemView extends ListCell<Photo> implements Observer {
             new Image(application.Main.class.getResourceAsStream("/media/firstcopy.png"),
                       25, 25, true, true);
     
-    static final Image addCaptionImage = 
+    static final Image editCaptionImage = 
             new Image(application.Main.class.getResourceAsStream("/media/write.png"),
                       25, 25, true, true);
     
@@ -58,18 +59,26 @@ public class ItemView extends ListCell<Photo> implements Observer {
     // ----- View components -----
     HBox panel = new HBox();
     ImageView imageView = new ImageView();
-    Label path = new Label();
+    
+    Label   path = new Label();
     Tooltip pathTooltip = new Tooltip();
+    
     ImageView favoriteIcon = new ImageView();
+    Tooltip   favoriteTooltip = new Tooltip();
+    
     ImageView tagIcon = new ImageView();
-    ImageView copiesIcon = new ImageView();
-    ImageView addCaptionIcon = new ImageView();
-    Label captionLabel = new Label();
-    TextArea captionTextArea = new TextArea();
-    Label tagLabel = new Label();
-    Tooltip tagTooltip = new Tooltip();
+    Tooltip   tagTooltip = new Tooltip();
+    Label     tagLabel = new Label();
 
-    boolean editingCaption = false;
+    ImageView copiesIcon = new ImageView();
+    Tooltip   copiesTooltip = new Tooltip();
+
+    ImageView editCaptionIcon = new ImageView();
+    Tooltip   editCaptionTooltip = new Tooltip();
+    Label     captionLabel = new Label();
+    TextArea  captionTextArea = new TextArea();
+    boolean   editingCaption = false;
+    final int CAPTION_TEXT_WIDTH = 200;
     
     // ----- Model linkage -----
     Photo model = null;
@@ -84,9 +93,10 @@ public class ItemView extends ListCell<Photo> implements Observer {
         assert(untaggedImage != null);
         assert(firstCopyImage != null);
         assert(copiesImage != null);
-        assert(addCaptionImage != null);
+        assert(editCaptionImage != null);
 
         controller = c;
+        final int ROW_HEIGHT = Photo.THUMB_HEIGHT;
     
         // --- Install event handlers
         setOnMousePressed(controller::onListItemMouseClick);
@@ -96,40 +106,59 @@ public class ItemView extends ListCell<Photo> implements Observer {
         tagIcon.setOnMousePressed(e -> {
             controller.onTagMouseClick(e, this); 
         });
-        addCaptionIcon.setOnMousePressed(e -> {
-            controller.onAddCaptionMousePressed(e, this); 
+        editCaptionIcon.setOnMousePressed(e -> {
+            controller.onEditCaptionMousePressed(e, this); 
         });
         
         // --- Build scene graph
+        String css = this.getClass().getClassLoader().getResource("application/application.css").toExternalForm();
+        panel.getStylesheets().add(css);
+
         panel.setMaxWidth(Double.MAX_VALUE);
         panel.setSpacing(10.0);
 
+        copiesIcon.setFitWidth(25);
+        copiesIcon.setFitHeight(25);
+        panel.getChildren().add(copiesIcon);
+
+        Tooltip.install(copiesIcon, copiesTooltip);
+        
         imageView.setFitWidth(Photo.THUMB_WIDTH);
         imageView.setFitHeight(Photo.THUMB_HEIGHT);
         panel.getChildren().add(imageView);
   
         favoriteIcon.setFitWidth(25);
         favoriteIcon.setFitHeight(25);
+        favoriteIcon.getStyleClass().add("glow-on-hover");
         panel.getChildren().add(favoriteIcon);
-        
+                        
+        favoriteTooltip.setText("Click to toggle favorite status");
+        Tooltip.install(favoriteIcon, favoriteTooltip);
+                              
         tagIcon.setFitWidth(32);
         tagIcon.setFitHeight(40);
+        tagIcon.getStyleClass().add("glow-on-hover");
         panel.getChildren().add(tagIcon);
+                
+        editCaptionIcon.setImage(editCaptionImage);
+        editCaptionIcon.setFitWidth(25);
+        editCaptionIcon.setFitHeight(25);
+        editCaptionIcon.getStyleClass().add("glow-on-hover");
+        panel.getChildren().add(editCaptionIcon);
         
-        copiesIcon.setFitWidth(25);
-        copiesIcon.setFitHeight(25);
-        panel.getChildren().add(copiesIcon);
-        
-        addCaptionIcon.setImage(addCaptionImage);
-        addCaptionIcon.setFitWidth(25);
-        addCaptionIcon.setFitHeight(25);
-        panel.getChildren().add(addCaptionIcon);
-        
+        captionLabel.setMaxHeight(Double.MAX_VALUE);
+        captionLabel.setPrefHeight(ROW_HEIGHT);
+        captionLabel.setPrefWidth(0);
+        captionLabel.setPadding(new Insets(10.0));
+        captionLabel.setAlignment(Pos.TOP_LEFT);
         panel.getChildren().add(captionLabel);
         
+        editCaptionTooltip.setText("Click to add/edit caption");
+        Tooltip.install(editCaptionIcon, editCaptionTooltip);
+     
         captionTextArea.setMaxHeight(Double.MAX_VALUE);
-        captionTextArea.setPrefWidth(200);
-        captionTextArea.setPrefHeight(100);
+        captionTextArea.setPrefWidth(CAPTION_TEXT_WIDTH);
+        captionTextArea.setPrefHeight(ROW_HEIGHT);
         captionTextArea.promptTextProperty().set("Enter caption..");
         panel.getChildren().add(captionTextArea);
         
@@ -227,13 +256,18 @@ public class ItemView extends ListCell<Photo> implements Observer {
             
             int copies = model.getDb().numDuplicates(model);
             if (copies <= 1) {
-                copiesIcon.setImage(null);       
+                copiesIcon.setImage(null); 
+                copiesTooltip.setText("Unique image");
             }
             else if (model.getDb().isCanonicalCopy(model)) {
                 copiesIcon.setImage(firstCopyImage);
+                copiesTooltip.setText(
+                        String.format("%d copies exist\n(This is the main copy)", copies));
             }
             else {
                 copiesIcon.setImage(copiesImage);
+                copiesTooltip.setText(
+                        String.format("%d copies exist\n(This it NOT the main copy)", copies));
             }
             /*
             // Print tags
@@ -263,21 +297,28 @@ public class ItemView extends ListCell<Photo> implements Observer {
             }
                         
             if (editingCaption) {
-                captionTextArea.setVisible(true);
                 captionLabel.setVisible(false);
-                // addCaptionIcon.setVisible(false);
+                captionLabel.setPrefWidth(0);
+                captionLabel.setMinWidth(0);
+                
+                captionTextArea.setVisible(true);
+                captionTextArea.setPrefWidth(CAPTION_TEXT_WIDTH);
             }
             else if (model.getCaption() == null || model.getCaption().isEmpty()) {
                 captionTextArea.setVisible(false);
+                captionTextArea.setPrefWidth(0);
+                
                 captionLabel.setVisible(false);
-                // addCaptionIcon.setVisible(true);
+                captionLabel.setPrefWidth(0);
             }
             else {
                 captionTextArea.setVisible(false);
+                captionTextArea.setPrefWidth(0);
                 captionTextArea.setText(model.getCaption());
+                
+                captionLabel.setPrefWidth(CAPTION_TEXT_WIDTH);
                 captionLabel.setVisible(true);
                 captionLabel.setText(model.getCaption());
-                // addCaptionIcon.setVisible(true);
             }
         }
     }

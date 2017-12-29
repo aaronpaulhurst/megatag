@@ -8,6 +8,6 @@ public interface ItemController {
     void onListItemMouseClick(MouseEvent e);
     void onFavoriteMouseClick(MouseEvent e, ItemView v);
     void onTagMouseClick(MouseEvent e, ItemView v);
-    void onAddCaptionMousePressed(MouseEvent e, ItemView v);
-    void onAddCaptionTextField(ActionEvent e, ItemView v);
+    void onEditCaptionMousePressed(MouseEvent e, ItemView v);
+    void onEditCaptionTextField(ActionEvent e, ItemView v);
 }

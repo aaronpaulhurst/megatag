@@ -16,27 +16,18 @@ public class Photo extends Observable {
     
     // Serialized
     @JsonProperty File file;
-    
     @JsonProperty boolean favorite = false;
-
     @JsonProperty long lastModified;
-
     @JsonProperty int hash;
-    
     @JsonProperty String caption;
-
     @JsonProperty List<String> tags = new LinkedList<String>();
-    
     @JsonProperty int rotation = 0;
-
     @JsonProperty long fileSize;
 
     // Not serialized
     @JsonIgnore boolean invalid = false;
-    @JsonIgnore boolean missing = false;
-    
+    @JsonIgnore boolean missing = false;    
     @JsonIgnore Image thumbnail;
-
     @JsonIgnore Database db;
     
     // Deserialization only

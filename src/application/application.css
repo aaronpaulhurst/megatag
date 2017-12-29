@@ -23,3 +23,12 @@
 	-fx-pref-width: 20;
 	-fx-pref-height: 20;
 }
+
+.glow-on-hover {
+	-fx-effect: none;
+}
+
+.glow-on-hover:hover {
+	-fx-effect: dropshadow( three-pass-box , darkgray, 10, 0.0, 0, 0 );
+}
+
