@@ -25,10 +25,23 @@ public class Main extends Application {
         return scheduler;
     }
     
-    public static File DB_FILE = new File("db.json");
+    public static File DB_FILE = new File("megatagDB.json");
     
 	@Override
 	public void start(Stage primaryStage) {
+	    
+	    // Where is the database located?
+	    // 1. On Windows, use the APPDATA environment variable
+	    String appData = System.getenv("APPDATA");
+	    if (appData != null) {
+	        DB_FILE = new File(appData, DB_FILE.toString());
+	    }
+	    // 2. Otherwise... home directory
+	    else {
+	        appData = System.getProperty("user.home");
+	        DB_FILE = new File(appData, DB_FILE.toString());
+	    }
+	    
 	    try {
 	        primaryStage.setScene(
 	            new Scene(
