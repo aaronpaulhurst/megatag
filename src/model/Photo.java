@@ -1,13 +1,19 @@
 package model;
 
 import java.io.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.*;
 import com.google.common.hash.*;
 import com.google.common.io.*;
 
 import javafx.scene.image.Image;
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.*;
 
 public class Photo extends Observable {
 
@@ -24,10 +30,13 @@ public class Photo extends Observable {
     @JsonProperty int rotation = 0;
     @JsonProperty long fileSize;
 
+    @JsonProperty LocalDate originalDate;
+    
     // Not serialized
     @JsonIgnore boolean invalid = false;
     @JsonIgnore boolean missing = false;    
     @JsonIgnore Image thumbnail;
+    @JsonIgnore long width = -1, height = -1;
     @JsonIgnore Database db;
     
     // Deserialization only
@@ -61,9 +70,11 @@ public class Photo extends Observable {
         } catch (IOException ex) {
             hash = 0;
         }
-
+        
         lastModified = file.lastModified();
         fileSize = file.length();
+
+        readMetadata();
     }
     
     public Database getDb() { return db; }
@@ -71,6 +82,8 @@ public class Photo extends Observable {
     public Image getThumbnail() { return thumbnail; }
     public long getLastModified() { return lastModified; }
     public long getFileSize() { return fileSize; }
+    public long getWidth() { return width; }
+    public long getHeight() { return height; }
     public int getHash() { return hash; }
     public boolean isMissing() { return missing; }
     public boolean isInvalid() { return invalid; }
@@ -134,5 +147,69 @@ public class Photo extends Observable {
         setChanged();
         notifyObservers();
         db.setChangedSinceSave();
+    }
+    
+    private void readMetadata() {
+        try {
+            Metadata metadata = ImageMetadataReader.readMetadata(file);
+
+            for (Directory directory : metadata.getDirectories()) {
+
+                //
+                // Each Directory stores values in Tag objects
+                //
+                for (Tag tag : directory.getTags()) {
+                    try {
+                        if (tag.getTagName().equals("Image Height")) {
+                            final Pattern pixels = Pattern.compile("(\\d+) pixels");                        
+                            Matcher m = pixels.matcher(tag.getDescription());
+                            if (m.matches()) {                            
+                                height = Integer.parseInt(m.group(1));
+                            }
+                        }
+                        if (tag.getTagName().equals("Image Width")) {
+                            final Pattern pixels = Pattern.compile("(\\d+) pixels");                        
+                            Matcher m = pixels.matcher(tag.getDescription());
+                            if (m.matches()) {                            
+                                width = Integer.parseInt(m.group(1));
+                            }
+                        }
+                        if (tag.getTagName().equals("Orientation")) {
+                            // Example: "Right side, top (Rotate 90 CW)"
+
+                            // Clockwise rotations
+                            final Pattern cwRotation = Pattern.compile(".*\\(Rotate (\\d+) CW\\).*");                        
+                            Matcher m = cwRotation.matcher(tag.getDescription());
+                            if (m.matches()) {                            
+                                rotation = Integer.parseInt(m.group(1));
+                            }
+
+                            // Counter-clockwise rotations
+                            final Pattern ccwRotation = Pattern.compile(".*\\(Rotate (\\d+) CCW\\).*");   
+                            m = ccwRotation.matcher(tag.getDescription());
+                            if (m.matches()) {
+                                rotation = -Integer.parseInt(m.group(0));
+                            }
+
+                            // TODO: mirroring?
+                        }
+                        if (tag.getTagName().equals("Date/Time")) {
+                            // Example: "2016:10:03 16:00:04"
+
+                            final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:ss");
+                            originalDate = LocalDate.parse(tag.getDescription(), formatter);
+                        }
+                        // Debugging/testing:
+                        // System.out.println(tag.toString());
+                    }
+                    catch (Exception e) {
+                        System.out.println("WARNING: Exception " + e.toString() + " for tag: " + tag.toString());
+                    }
+                }
+
+            }
+        } catch (Exception e) {
+            System.out.println("WARNING: Could not read metadata: " + file);
+        }
     }
 }
