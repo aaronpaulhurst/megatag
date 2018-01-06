@@ -242,8 +242,8 @@ public class MenuController implements Initializable {
         getDatabaseView().filterFavorites = false;
         filterFavoritesMenuItem.setSelected(false);
 
-        getDatabaseView().filterFavorites = false;
-        filterFavoritesMenuItem.setSelected(false);
+        getDatabaseView().filterMissing = false;
+        filterMissingMenuItem.setSelected(false);
 
         getDatabaseView().filterOnlyDuplicated = false;
         filterDuplicatedMenuItem.setSelected(false);
