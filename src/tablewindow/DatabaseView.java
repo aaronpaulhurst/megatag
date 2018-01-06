@@ -1,19 +1,15 @@
-package mainwindow;
+package tablewindow;
 
-import java.io.File;
-import java.util.*;
-import java.util.function.Predicate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Observable;
+import java.util.Observer;
 
-import javafx.collections.*;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.control.Label;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
 import model.Database;
 import model.Photo;
@@ -90,10 +86,12 @@ public class DatabaseView implements Observer {
     public void setSort(Comparator<Photo> sort) {
         System.out.println("DatabaseView: changed sort");
         this.sort = sort;
+        update();
     }
     public void setSortDirection(boolean ascending) {
         System.out.println("DatabaseView: changed sort");
         this.ascendingSort = ascending;
+        update();
     }
 
     @Override
@@ -101,24 +99,27 @@ public class DatabaseView implements Observer {
         if (o == db) {
             // Database changed.
             System.out.println("DatabaseView: notified of change");
-
-            ArrayList<Photo> toAdd = new ArrayList<Photo>();
-
-            for(Photo i : db.get()) {
-                if (!isFiltered(i)) {
-                    toAdd.add(i);
-                }
-            }
-
-            if (sort != null) {
-                toAdd.sort(sort);
-            }
-            if (!ascendingSort) {
-                Collections.reverse(toAdd);
-            }
-
-            rows.clear();
-            rows.addAll(toAdd);
+            update();
         }
+    }
+
+    public void update() {
+        ArrayList<Photo> toAdd = new ArrayList<Photo>();
+
+        for(Photo i : db.get()) {
+            if (!isFiltered(i)) {
+                toAdd.add(i);
+            }
+        }
+
+        if (sort != null) {
+            toAdd.sort(sort);
+        }
+        if (!ascendingSort) {
+            Collections.reverse(toAdd);
+        }
+
+        rows.clear();
+        rows.addAll(toAdd);
     }
 }

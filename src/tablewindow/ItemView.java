@@ -1,4 +1,4 @@
-package mainwindow;
+package tablewindow;
 
 import java.io.File;
 import java.util.*;

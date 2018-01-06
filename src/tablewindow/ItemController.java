@@ -1,4 +1,4 @@
-package mainwindow;
+package tablewindow;
 
 import javafx.event.ActionEvent;
 import javafx.scene.input.MouseButton;

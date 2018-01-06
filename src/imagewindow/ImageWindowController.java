@@ -23,8 +23,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import mainwindow.MainWindowController;
 import model.Photo;
+import tablewindow.MainController;
 
 public class ImageWindowController implements Initializable, Observer {
 
@@ -79,8 +79,8 @@ public class ImageWindowController implements Initializable, Observer {
     Photo current;
 
     // ----- Parent/Child Views -----
-    MainWindowController parent;
-    public void setParent(MainWindowController p) { parent = p; }
+    MainController parent;
+    public void setParent(MainController p) { parent = p; }
 
     // ----- Controller -----
 

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="Infinity" maxWidth="Infinity" stylesheets="@../application/application.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tablewindow.MenuController">
+	<children>
+		<MenuBar fx:id="mainMenuBar" maxWidth="Infinity">
+			<menus>
+				<Menu fx:id="fileMenu" mnemonicParsing="false" text="File">
+					<items>
+						<MenuItem mnemonicParsing="false" onAction="#onOpenFilesMenuItem" text="Open Files...">
+							<accelerator>
+								<KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+							</accelerator>
+						</MenuItem>
+						<MenuItem mnemonicParsing="false" onAction="#onOpenDirectoryMenuItem" text="Open Directory...">
+							<accelerator>
+								<KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="DOWN" shortcut="DOWN" />
+							</accelerator>
+						</MenuItem>
+						<SeparatorMenuItem mnemonicParsing="false" />
+						<MenuItem mnemonicParsing="false" onAction="#onSaveMenuItem" text="Save">
+							<accelerator>
+								<KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+							</accelerator>
+						</MenuItem>
+						<SeparatorMenuItem mnemonicParsing="false" />
+						<MenuItem fx:id="quitMenuItem" mnemonicParsing="false" onAction="#onQuitMenuItem" text="Quit">
+							<accelerator>
+								<KeyCodeCombination alt="UP" code="Q" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+							</accelerator>
+						</MenuItem>
+					</items>
+				</Menu>
+				<Menu fx:id="editMenu" mnemonicParsing="false" text="Edit">
+					<items>
+						<MenuItem fx:id="selectAllMenuItem" mnemonicParsing="false" onAction="#onSelectAllMenuItem" text="Select All">
+							<accelerator>
+								<KeyCodeCombination alt="UP" code="A" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+							</accelerator>
+						</MenuItem>
+						<MenuItem fx:id="selectNoneMenuItem" mnemonicParsing="false" onAction="#onSelectNoneMenuItem" text="Select None">
+							<accelerator>
+								<KeyCodeCombination alt="UP" code="A" control="UP" meta="UP" shift="DOWN" shortcut="DOWN" />
+							</accelerator>
+						</MenuItem>
+						<SeparatorMenuItem mnemonicParsing="false" />
+						<MenuItem fx:id="removeMenuItem" mnemonicParsing="false" onAction="#onRemoveMenuItem" text="Delete" />
+						<SeparatorMenuItem mnemonicParsing="false" />
+						<MenuItem fx:id="rotateLeftMenuItem" mnemonicParsing="false" onAction="#onRotateLeftMenuItem" text="Rotate Left" />
+						<MenuItem fx:id="rotateRightMenuItem" mnemonicParsing="false" onAction="#onRotateRightMenuItem" text="Rotate Right" />
+						<SeparatorMenuItem mnemonicParsing="false" />
+						<MenuItem fx:id="clearAllTagsMenuItem" mnemonicParsing="false" onAction="#onClearAllTagsMenuItem" text="Clear All Tags" />
+					</items>
+				</Menu>
+				<Menu fx:id="filterMenu" mnemonicParsing="false" text="Filter">
+					<items>
+						<MenuItem mnemonicParsing="false" onAction="#onFilterClearMenuItem" text="Show All" />
+						<SeparatorMenuItem mnemonicParsing="false" />
+						<CheckMenuItem fx:id="filterFavoritesMenuItem" mnemonicParsing="false" onAction="#onFilterFavoritesMenuItem" text="Favorites Only" />
+						<CheckMenuItem fx:id="filterMissingMenuItem" mnemonicParsing="false" onAction="#onFilterMissingMenuItem" text="Missing Only" />
+						<SeparatorMenuItem mnemonicParsing="false" />
+						<CheckMenuItem fx:id="filterTaggedMenuItem" mnemonicParsing="false" onAction="#onFilterTaggedMenuItem" text="Tagged Only" />
+						<CheckMenuItem fx:id="filterUntaggedMenuItem" mnemonicParsing="false" onAction="#onFilterUntaggedMenuItem" text="Untagged Only" />
+						<SeparatorMenuItem mnemonicParsing="false" />
+						<CheckMenuItem fx:id="filterHideExtrasMenuItem" mnemonicParsing="false" onAction="#onFilterHideExtrasMenuItem" text="Hide Extra Copies" />
+						<CheckMenuItem fx:id="filterDuplicatedMenuItem" mnemonicParsing="false" onAction="#onFilterDuplicatedMenuItem" text="Duplicated Only" />
+						<CheckMenuItem fx:id="filterExtraCopiesMenuItem" mnemonicParsing="false" onAction="#onFilterExtraCopiesMenuItem" text="Extra Copies Only" />
+					</items>
+				</Menu>
+				<Menu fx:id="sortMenu" mnemonicParsing="false" text="Sort">
+					<items>
+						<RadioMenuItem mnemonicParsing="false" onAction="#onSortAscending" selected="true" text="Ascending">
+							<toggleGroup>
+								<ToggleGroup fx:id="Direction" />
+							</toggleGroup>
+						</RadioMenuItem>
+						<RadioMenuItem mnemonicParsing="false" onAction="#onSortDescending" text="Desceding" toggleGroup="$Direction" />
+						<SeparatorMenuItem mnemonicParsing="false" />
+						<MenuItem fx:id="sortFilenameMenuItem" mnemonicParsing="false" onAction="#onSortFilenameMenuItem" text="Order: Filename" />
+						<MenuItem fx:id="sortOrderAddedMenuItem" mnemonicParsing="false" onAction="#onSortOrderAddedMenuItem" text="Order: Added" />
+						<MenuItem fx:id="sortFavoritesMenuItem" mnemonicParsing="false" onAction="#onSortFavoritesMenuItem" text="Order: Favorites" />
+						<MenuItem fx:id="sortTagsMenuItem" mnemonicParsing="false" onAction="#onSortTagsMenuItem" text="Order: Tags" />
+						<MenuItem fx:id="onSortLastModifiedMenuItem" mnemonicParsing="false" onAction="#onSortLastModifiedMenuItem" text="Order: Last Modified" />
+						<MenuItem fx:id="onSortFileSizeMenuItem" mnemonicParsing="false" onAction="#onSortFileSizeMenuItem" text="Order: File Size" />
+						<SeparatorMenuItem mnemonicParsing="false" />
+						<MenuItem mnemonicParsing="false" onAction="#onGroupDuplicatedMenuItem" text="Group Duplicates" />
+					</items>
+				</Menu>
+			</menus>
+		</MenuBar>
+	</children>
+</AnchorPane>

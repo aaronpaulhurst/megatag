@@ -44,7 +44,7 @@ public class Main extends Application {
 	    try {
 	        primaryStage.setScene(
 	            new Scene(
-	                FXMLLoader.load(getClass().getClassLoader().getResource("mainwindow/MainWindow.fxml")),
+	                FXMLLoader.load(getClass().getClassLoader().getResource("tablewindow/MainWindow.fxml")),
 	                900, 600) );
 
 	        primaryStage.setOnCloseRequest(e -> Platform.exit());

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="Infinity" maxWidth="Infinity" prefHeight="508.0" prefWidth="570.0" stylesheets="@../application/application.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tablewindow.MainController">
+   <children>
+      <BorderPane maxHeight="Infinity" maxWidth="Infinity" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <bottom>
+            <HBox maxHeight="25.0" maxWidth="Infinity" minHeight="25.0" prefHeight="25.0" styleClass="grey-message-box" stylesheets="@../application/application.css" BorderPane.alignment="CENTER">
+               <children>
+                  <Label fx:id="messageLabel" maxHeight="1.7976931348623157E308">
+                     <padding>
+                        <Insets top="5.0" />
+                     </padding>
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin>
+            </HBox>
+         </bottom>
+         <top>
+            <VBox BorderPane.alignment="CENTER">
+               <children>
+                  <fx:include fx:id="menuBarPane" source="MenuBar.fxml" />
+               
+                  <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="grey-message-box">
+                     <children>
+                        <Pane maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="cancelFindTagButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCancelFindTagButton" prefHeight="20.0" prefWidth="20.0" text="-" visible="false">
+                           <padding>
+                              <Insets top="-2.0" />
+                           </padding>
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                           <styleClass>
+                              <String fx:value="minus-button" />
+                              <String fx:value="glow-on-hover" />
+                           </styleClass>
+                        </Button>
+                        <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" text="Filter by Tag:" HBox.hgrow="NEVER">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Label>
+                        <MenuButton fx:id="tagMenuButton" mnemonicParsing="false" onAction="#onTagMenuButton" onMouseDragEntered="#onTagMenuMouseEntered" onMouseEntered="#onTagMenuMouseEntered" text="..." HBox.hgrow="NEVER">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </MenuButton>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </top>
+         <center>
+            <VBox BorderPane.alignment="CENTER">
+               <children>
+                  <HBox styleClass="grey-message-box" stylesheets="@../application/application.css">
+                     <children>
+                        <Button focusTraversable="false" minWidth="45.0" mnemonicParsing="false" prefHeight="25.0" styleClass="column-header" text=" " />
+                        <Button focusTraversable="false" minWidth="100.0" mnemonicParsing="false" prefHeight="25.0" styleClass="column-header" text="Photo" />
+                        <Button focusTraversable="false" minWidth="125.0" mnemonicParsing="false" prefHeight="25.0" styleClass="column-header" text="Actions" />
+                        <Button focusTraversable="false" minWidth="200.0" mnemonicParsing="false" prefHeight="25.0" styleClass="column-header" text="Caption" />
+                        <Button focusTraversable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" mnemonicParsing="false" prefHeight="25.0" styleClass="column-header" text="Filename" HBox.hgrow="ALWAYS" />
+                     </children>
+                  </HBox>
+                  <ListView fx:id="listView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onKeyPressed="#onKeyPressed" VBox.vgrow="ALWAYS">
+                     <padding>
+                        <Insets top="2.0" />
+                     </padding>
+                  </ListView>
+               </children>
+            </VBox>
+         </center>
+      </BorderPane>
+   </children>
+</AnchorPane>

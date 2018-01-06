@@ -1,4 +1,4 @@
-package mainwindow;
+package tablewindow;
 
 import java.io.IOException;
 import java.net.URL;
@@ -26,7 +26,7 @@ import model.Database;
 import model.Photo;
 import imagewindow.ImageWindowController;
 
-public class TagWindowController implements Initializable {
+public class TagPopupController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -36,8 +36,8 @@ public class TagWindowController implements Initializable {
     Photo model;
 
     // ----- Parent/Child Views -----
-    MainWindowController parent;
-    public void setParent(MainWindowController p) { parent = p; }
+    MainController parent;
+    public void setParent(MainController p) { parent = p; }
 
     // ----- View Elements -----
 
@@ -97,7 +97,7 @@ public class TagWindowController implements Initializable {
         }
 
         newTags.getChildren().clear();
-        List<String> topTags = parent.getModel().getTopTags(5);
+        List<String> topTags = parent.getDatabase().getTopTags(5);
         // Don't suggest tags we already have
         for(String tag: model.getTags()) {
             topTags.remove(tag);
