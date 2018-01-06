@@ -1,0 +1,6 @@
+/bin/
+/target/
+*.DS_Store
+Megatag.jar
+/tmp/
+.*
