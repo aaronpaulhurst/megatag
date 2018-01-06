@@ -2,6 +2,7 @@ package model;
 
 import java.io.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -20,6 +21,9 @@ public class Photo extends Observable {
     public static final int THUMB_WIDTH = 100;
     public static final int THUMB_HEIGHT = 100;
 
+    public static final DateTimeFormatter EXIF_DATE_FORMAT =
+            DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:ss");
+
     // Serialized
     @JsonProperty File file;
     @JsonProperty boolean favorite = false;
@@ -29,14 +33,13 @@ public class Photo extends Observable {
     @JsonProperty List<String> tags = new LinkedList<String>();
     @JsonProperty int rotation = 0;
     @JsonProperty long fileSize;
-
-    @JsonProperty LocalDate originalDate;
+    @JsonProperty LocalDateTime originalDate;
+    @JsonProperty long width = -1, height = -1;
 
     // Not serialized
     @JsonIgnore boolean invalid = false;
     @JsonIgnore boolean missing = false;
     @JsonIgnore Image thumbnail;
-    @JsonIgnore long width = -1, height = -1;
     @JsonIgnore Database db;
 
     // Deserialization only
@@ -45,6 +48,7 @@ public class Photo extends Observable {
     public Photo(File file, Database db) {
         this.file = file;
         finishInit(db);
+        readMetadata();
     }
 
     public void finishInit(Database db) {
@@ -73,8 +77,6 @@ public class Photo extends Observable {
 
         lastModified = file.lastModified();
         fileSize = file.length();
-
-        readMetadata();
     }
 
     public Database getDb() { return db; }
@@ -85,6 +87,7 @@ public class Photo extends Observable {
     public long getWidth() { return width; }
     public long getHeight() { return height; }
     public int getHash() { return hash; }
+    public LocalDateTime getOriginalDate() { return originalDate; }
     public boolean isMissing() { return missing; }
     public boolean isInvalid() { return invalid; }
 
@@ -195,9 +198,7 @@ public class Photo extends Observable {
                         }
                         if (tag.getTagName().equals("Date/Time")) {
                             // Example: "2016:10:03 16:00:04"
-
-                            final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:ss");
-                            originalDate = LocalDate.parse(tag.getDescription(), formatter);
+                            originalDate = LocalDateTime.parse(tag.getDescription(), EXIF_DATE_FORMAT);
                         }
                         // Debugging/testing:
                         // System.out.println(tag.toString());

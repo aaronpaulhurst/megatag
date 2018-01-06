@@ -88,6 +88,7 @@
 						<MenuItem fx:id="sortFavoritesMenuItem" mnemonicParsing="false" onAction="#onSortFavoritesMenuItem" text="Order: Favorites" />
 						<MenuItem fx:id="sortTagsMenuItem" mnemonicParsing="false" onAction="#onSortTagsMenuItem" text="Order: Tags" />
 						<MenuItem fx:id="onSortLastModifiedMenuItem" mnemonicParsing="false" onAction="#onSortLastModifiedMenuItem" text="Order: Last Modified" />
+                  <MenuItem fx:id="onSortOriginalDateMenuItem1" mnemonicParsing="false" onAction="#onSortOriginalDateMenuItem" text="Order: Original Date" />
 						<MenuItem fx:id="onSortFileSizeMenuItem" mnemonicParsing="false" onAction="#onSortFileSizeMenuItem" text="Order: File Size" />
 						<SeparatorMenuItem mnemonicParsing="false" />
 						<MenuItem mnemonicParsing="false" onAction="#onGroupDuplicatedMenuItem" text="Group Duplicates" />

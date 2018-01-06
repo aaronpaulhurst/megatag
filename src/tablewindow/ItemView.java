@@ -1,6 +1,7 @@
 package tablewindow;
 
 import java.io.File;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import javafx.collections.*;
@@ -56,12 +57,12 @@ public class ItemView extends ListCell<Photo> implements Observer {
 
     static final int MAX_DISPLAY_LENGTH = 50;
 
+    static final DateTimeFormatter DISPLAY_DATE_FORMAT =
+            DateTimeFormatter.ofPattern("MMMM d, yyyy\nh:mm a", Locale.getDefault());
+
     // ----- View components -----
     HBox panel = new HBox();
     ImageView imageView = new ImageView();
-
-    Label   path = new Label();
-    Tooltip pathTooltip = new Tooltip();
 
     ImageView favoriteIcon = new ImageView();
     Tooltip   favoriteTooltip = new Tooltip();
@@ -79,6 +80,12 @@ public class ItemView extends ListCell<Photo> implements Observer {
     TextArea  captionTextArea = new TextArea();
     boolean   editingCaption = false;
     final int CAPTION_TEXT_WIDTH = 200;
+    final int DATE_TEXT_WIDTH = 200;
+
+    Label   date = new Label();
+
+    Label   path = new Label();
+    Tooltip pathTooltip = new Tooltip();
 
     // ----- Model linkage -----
     Photo model = null;
@@ -157,6 +164,7 @@ public class ItemView extends ListCell<Photo> implements Observer {
         Tooltip.install(editCaptionIcon, editCaptionTooltip);
 
         captionTextArea.setMaxHeight(Double.MAX_VALUE);
+        captionTextArea.setMinWidth(CAPTION_TEXT_WIDTH);
         captionTextArea.setPrefWidth(CAPTION_TEXT_WIDTH);
         captionTextArea.setPrefHeight(ROW_HEIGHT);
         captionTextArea.promptTextProperty().set("Enter caption..");
@@ -169,6 +177,10 @@ public class ItemView extends ListCell<Photo> implements Observer {
         */
         Tooltip.install(tagIcon, tagTooltip);
 
+        date.setPrefWidth(DATE_TEXT_WIDTH);
+        panel.getChildren().add(date);
+
+        // Growable area to take up empty space
         Pane ppp = new Pane();
         ppp.setMaxWidth(Double.MAX_VALUE);
         panel.getChildren().add(ppp);
@@ -239,6 +251,10 @@ public class ItemView extends ListCell<Photo> implements Observer {
         if (o == model) {
             imageView.setImage(model.getThumbnail());
             imageView.setRotate(model.getRotation());
+
+            if (model.getOriginalDate() != null) {
+                date.setText(model.getOriginalDate().format(DISPLAY_DATE_FORMAT));
+            }
 
             path.setText(getDisplayName(model.getFile()));
             // Show the full path as a tooltip

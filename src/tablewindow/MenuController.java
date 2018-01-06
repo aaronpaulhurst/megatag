@@ -105,6 +105,13 @@ public class MenuController implements Initializable {
         });
     }
 
+    @FXML private void onSortOriginalDateMenuItem(ActionEvent e) {
+        System.out.println("Event: onSortOriginalDateMenuItem");
+        getDatabaseView().setSort((Photo x, Photo y) -> {
+            return x.getOriginalDate().compareTo(y.getOriginalDate());
+        });
+    }
+
     @FXML private void onSortFileSizeMenuItem(ActionEvent e) {
         System.out.println("Event: onSortFileSizedMenuItem");
         getDatabaseView().setSort((Photo x, Photo y) -> {

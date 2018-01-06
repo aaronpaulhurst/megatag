@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="Infinity" maxWidth="Infinity" prefHeight="508.0" prefWidth="570.0" stylesheets="@../application/application.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tablewindow.MainController">
+<AnchorPane maxHeight="Infinity" maxWidth="Infinity" prefHeight="508.0" prefWidth="834.0" stylesheets="@../application/application.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tablewindow.MainController">
    <children>
       <BorderPane maxHeight="Infinity" maxWidth="Infinity" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <bottom>
@@ -73,6 +73,7 @@
                         <Button focusTraversable="false" minWidth="100.0" mnemonicParsing="false" prefHeight="25.0" styleClass="column-header" text="Photo" />
                         <Button focusTraversable="false" minWidth="125.0" mnemonicParsing="false" prefHeight="25.0" styleClass="column-header" text="Actions" />
                         <Button focusTraversable="false" minWidth="200.0" mnemonicParsing="false" prefHeight="25.0" styleClass="column-header" text="Caption" />
+                        <Button focusTraversable="false" minWidth="200.0" mnemonicParsing="false" prefHeight="25.0" styleClass="column-header" text="Date" />
                         <Button focusTraversable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" mnemonicParsing="false" prefHeight="25.0" styleClass="column-header" text="Filename" HBox.hgrow="ALWAYS" />
                      </children>
                   </HBox>

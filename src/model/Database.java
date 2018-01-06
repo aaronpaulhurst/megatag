@@ -18,6 +18,8 @@ import javafx.stage.StageStyle;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.datatype.jsr310.*;
 
 public class Database extends Observable {
 
@@ -195,6 +197,7 @@ public class Database extends Observable {
 
     public void write(OutputStream os) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
 
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 
@@ -211,9 +214,11 @@ public class Database extends Observable {
     }
 
     public void read(InputStream is) throws IOException {
-        ArrayList<Photo> readImages =
-                new ObjectMapper().readValue(is,
-                        new TypeReference<ArrayList<Photo>>() { });
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
+        ArrayList<Photo> readImages = mapper.readValue(is,
+                new TypeReference<ArrayList<Photo>>() { });
 
         System.out.println("Read " + readImages.size() + " images");
 
