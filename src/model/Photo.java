@@ -19,7 +19,7 @@ public class Photo extends Observable {
 
     public static final int THUMB_WIDTH = 100;
     public static final int THUMB_HEIGHT = 100;
-    
+
     // Serialized
     @JsonProperty File file;
     @JsonProperty boolean favorite = false;
@@ -31,30 +31,30 @@ public class Photo extends Observable {
     @JsonProperty long fileSize;
 
     @JsonProperty LocalDate originalDate;
-    
+
     // Not serialized
     @JsonIgnore boolean invalid = false;
-    @JsonIgnore boolean missing = false;    
+    @JsonIgnore boolean missing = false;
     @JsonIgnore Image thumbnail;
     @JsonIgnore long width = -1, height = -1;
     @JsonIgnore Database db;
-    
+
     // Deserialization only
     public Photo() { }
-    
+
     public Photo(File file, Database db) {
         this.file = file;
         finishInit(db);
     }
-    
+
     public void finishInit(Database db) {
         this.db = db;
-                
+
         if (!file.exists()) {
             missing = true;
             return;
         }
-        
+
         ByteSource bs = Files.asByteSource(file);
 
         // Read image
@@ -63,20 +63,20 @@ public class Photo extends Observable {
         } catch(IOException ex) {
             invalid = true;
         }
-        
+
         // Read hash
         try {
             hash = bs.hash(Hashing.crc32()).asInt();
         } catch (IOException ex) {
             hash = 0;
         }
-        
+
         lastModified = file.lastModified();
         fileSize = file.length();
 
         readMetadata();
     }
-    
+
     public Database getDb() { return db; }
     public File getFile() { return file; }
     public Image getThumbnail() { return thumbnail; }
@@ -89,7 +89,7 @@ public class Photo extends Observable {
     public boolean isInvalid() { return invalid; }
 
     public String getCaption() { return caption; }
-    public  void setCaption(String val) { 
+    public  void setCaption(String val) {
         caption = val;
         setChanged();
         notifyObservers();
@@ -97,29 +97,29 @@ public class Photo extends Observable {
             db.setChangedSinceSave();
         }
     }
-    
+
     public boolean isFavorite() { return favorite; }
-    public void setFavorite(boolean val) { 
-        favorite = val;        
+    public void setFavorite(boolean val) {
+        favorite = val;
         setChanged();
         notifyObservers();
         if (db != null) {
             db.setChangedSinceSave();
         }
     }
-    
+
     public int getRotation() { return rotation; }
-    public void setRotation(int angle) { 
-        rotation = angle;        
+    public void setRotation(int angle) {
+        rotation = angle;
         setChanged();
         notifyObservers();
         if (db != null) {
             db.setChangedSinceSave();
         }
     }
-    
+
     public List<String> getTags() { return tags; }
-    public void addTag(String tag) { 
+    public void addTag(String tag) {
         if (tags.contains(tag)) {
             return;
         }
@@ -129,7 +129,7 @@ public class Photo extends Observable {
         notifyObservers();
         db.setChangedSinceSave();
     }
-    public void removeTag(String tag) { 
+    public void removeTag(String tag) {
         if (!tags.contains(tag)) {
             return;
         }
@@ -141,14 +141,14 @@ public class Photo extends Observable {
     }
     public void removeAllTags() {
         for(String tag: tags) {
-            db.incTag(tag, -1);  
+            db.incTag(tag, -1);
         }
         tags.clear();
         setChanged();
         notifyObservers();
         db.setChangedSinceSave();
     }
-    
+
     private void readMetadata() {
         try {
             Metadata metadata = ImageMetadataReader.readMetadata(file);
@@ -161,16 +161,16 @@ public class Photo extends Observable {
                 for (Tag tag : directory.getTags()) {
                     try {
                         if (tag.getTagName().equals("Image Height")) {
-                            final Pattern pixels = Pattern.compile("(\\d+) pixels");                        
+                            final Pattern pixels = Pattern.compile("(\\d+) pixels");
                             Matcher m = pixels.matcher(tag.getDescription());
-                            if (m.matches()) {                            
+                            if (m.matches()) {
                                 height = Integer.parseInt(m.group(1));
                             }
                         }
                         if (tag.getTagName().equals("Image Width")) {
-                            final Pattern pixels = Pattern.compile("(\\d+) pixels");                        
+                            final Pattern pixels = Pattern.compile("(\\d+) pixels");
                             Matcher m = pixels.matcher(tag.getDescription());
-                            if (m.matches()) {                            
+                            if (m.matches()) {
                                 width = Integer.parseInt(m.group(1));
                             }
                         }
@@ -178,14 +178,14 @@ public class Photo extends Observable {
                             // Example: "Right side, top (Rotate 90 CW)"
 
                             // Clockwise rotations
-                            final Pattern cwRotation = Pattern.compile(".*\\(Rotate (\\d+) CW\\).*");                        
+                            final Pattern cwRotation = Pattern.compile(".*\\(Rotate (\\d+) CW\\).*");
                             Matcher m = cwRotation.matcher(tag.getDescription());
-                            if (m.matches()) {                            
+                            if (m.matches()) {
                                 rotation = Integer.parseInt(m.group(1));
                             }
 
                             // Counter-clockwise rotations
-                            final Pattern ccwRotation = Pattern.compile(".*\\(Rotate (\\d+) CCW\\).*");   
+                            final Pattern ccwRotation = Pattern.compile(".*\\(Rotate (\\d+) CCW\\).*");
                             m = ccwRotation.matcher(tag.getDescription());
                             if (m.matches()) {
                                 rotation = -Integer.parseInt(m.group(0));

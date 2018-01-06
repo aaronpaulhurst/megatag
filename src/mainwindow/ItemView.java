@@ -28,44 +28,44 @@ import model.Database;
 import model.Photo;
 
 public class ItemView extends ListCell<Photo> implements Observer {
-    
-    static final Image favoriteOnIcon = 
+
+    static final Image favoriteOnIcon =
             new Image(application.Main.class.getResourceAsStream("/media/star.png"),
                       25, 25, true, true);
-    static final Image favoriteOffIcon = 
+    static final Image favoriteOffIcon =
             new Image(application.Main.class.getResourceAsStream("/media/dimstar.png"),
                       25, 25, true, true);
 
-    static final Image tagImage = 
+    static final Image tagImage =
             new Image(application.Main.class.getResourceAsStream("/media/tag.png"),
                       32, 40, true, true);
-    static final Image untaggedImage = 
+    static final Image untaggedImage =
             new Image(application.Main.class.getResourceAsStream("/media/untagged.png"),
                       32, 40, true, true);
 
-    static final Image copiesImage = 
+    static final Image copiesImage =
             new Image(application.Main.class.getResourceAsStream("/media/copies.png"),
                       25, 25, true, true);
-    static final Image firstCopyImage = 
+    static final Image firstCopyImage =
             new Image(application.Main.class.getResourceAsStream("/media/firstcopy.png"),
                       25, 25, true, true);
-    
-    static final Image editCaptionImage = 
+
+    static final Image editCaptionImage =
             new Image(application.Main.class.getResourceAsStream("/media/write.png"),
                       25, 25, true, true);
-    
+
     static final int MAX_DISPLAY_LENGTH = 50;
-    
+
     // ----- View components -----
     HBox panel = new HBox();
     ImageView imageView = new ImageView();
-    
+
     Label   path = new Label();
     Tooltip pathTooltip = new Tooltip();
-    
+
     ImageView favoriteIcon = new ImageView();
     Tooltip   favoriteTooltip = new Tooltip();
-    
+
     ImageView tagIcon = new ImageView();
     Tooltip   tagTooltip = new Tooltip();
     Label     tagLabel = new Label();
@@ -79,14 +79,14 @@ public class ItemView extends ListCell<Photo> implements Observer {
     TextArea  captionTextArea = new TextArea();
     boolean   editingCaption = false;
     final int CAPTION_TEXT_WIDTH = 200;
-    
+
     // ----- Model linkage -----
     Photo model = null;
 
     // ----- Controller linkage -----
     ItemController controller;
-    
-    ItemView(ItemController c) {        
+
+    ItemView(ItemController c) {
         assert(favoriteOnIcon != null);
         assert(favoriteOffIcon != null);
         assert(tagImage != null);
@@ -97,19 +97,19 @@ public class ItemView extends ListCell<Photo> implements Observer {
 
         controller = c;
         final int ROW_HEIGHT = Photo.THUMB_HEIGHT;
-    
+
         // --- Install event handlers
         setOnMousePressed(controller::onListItemMouseClick);
         favoriteIcon.setOnMousePressed(e -> {
-            controller.onFavoriteMouseClick(e, this); 
+            controller.onFavoriteMouseClick(e, this);
         });
         tagIcon.setOnMousePressed(e -> {
-            controller.onTagMouseClick(e, this); 
+            controller.onTagMouseClick(e, this);
         });
         editCaptionIcon.setOnMousePressed(e -> {
-            controller.onEditCaptionMousePressed(e, this); 
+            controller.onEditCaptionMousePressed(e, this);
         });
-        
+
         // --- Build scene graph
         String css = this.getClass().getClassLoader().getResource("application/application.css").toExternalForm();
         panel.getStylesheets().add(css);
@@ -122,53 +122,53 @@ public class ItemView extends ListCell<Photo> implements Observer {
         panel.getChildren().add(copiesIcon);
 
         Tooltip.install(copiesIcon, copiesTooltip);
-        
+
         imageView.setFitWidth(Photo.THUMB_WIDTH);
         imageView.setFitHeight(Photo.THUMB_HEIGHT);
         panel.getChildren().add(imageView);
-  
+
         favoriteIcon.setFitWidth(25);
         favoriteIcon.setFitHeight(25);
         favoriteIcon.getStyleClass().add("glow-on-hover");
         panel.getChildren().add(favoriteIcon);
-                        
+
         favoriteTooltip.setText("Click to toggle favorite status");
         Tooltip.install(favoriteIcon, favoriteTooltip);
-                              
+
         tagIcon.setFitWidth(32);
         tagIcon.setFitHeight(40);
         tagIcon.getStyleClass().add("glow-on-hover");
         panel.getChildren().add(tagIcon);
-                
+
         editCaptionIcon.setImage(editCaptionImage);
         editCaptionIcon.setFitWidth(25);
         editCaptionIcon.setFitHeight(25);
         editCaptionIcon.getStyleClass().add("glow-on-hover");
         panel.getChildren().add(editCaptionIcon);
-        
+
         captionLabel.setMaxHeight(Double.MAX_VALUE);
         captionLabel.setPrefHeight(ROW_HEIGHT);
         captionLabel.setPrefWidth(0);
         captionLabel.setPadding(new Insets(10.0));
         captionLabel.setAlignment(Pos.TOP_LEFT);
         panel.getChildren().add(captionLabel);
-        
+
         editCaptionTooltip.setText("Click to add/edit caption");
         Tooltip.install(editCaptionIcon, editCaptionTooltip);
-     
+
         captionTextArea.setMaxHeight(Double.MAX_VALUE);
         captionTextArea.setPrefWidth(CAPTION_TEXT_WIDTH);
         captionTextArea.setPrefHeight(ROW_HEIGHT);
         captionTextArea.promptTextProperty().set("Enter caption..");
         panel.getChildren().add(captionTextArea);
-        
+
         /*
         // Print tags
         tagLabel.setStyle("-fx-font-size: 8");
         panel.getChildren().add(tagLabel);
         */
         Tooltip.install(tagIcon, tagTooltip);
-        
+
         Pane ppp = new Pane();
         ppp.setMaxWidth(Double.MAX_VALUE);
         panel.getChildren().add(ppp);
@@ -181,29 +181,29 @@ public class ItemView extends ListCell<Photo> implements Observer {
 
         panel.setAlignment(Pos.CENTER_LEFT);
     }
-    
+
     Photo getPhoto() { return model; }
-    
+
     public void setEditCaptionEnabled(boolean en) {
         this.editingCaption = en;
-        
+
         if (en == false) {
             getPhoto().setCaption(captionTextArea.getText());
         }
         update(model, null);
     }
-    
+
     public boolean isEditCaptionEnabled() {
         return editingCaption;
     }
-    
+
     @Override
     public void updateItem(Photo item, boolean empty) {
         super.updateItem(item, empty);
 
         if (empty) {
             setGraphic(null);
-            
+
             if (model != null) {
                 model.deleteObserver(this);
             }
@@ -213,13 +213,13 @@ public class ItemView extends ListCell<Photo> implements Observer {
 
             update(model, null);
             model.addObserver(this);
-            
+
             setGraphic(panel);
         }
     }
-    
+
     // Return a chopped display version of the file path.
-    private String getDisplayName(File file) {                
+    private String getDisplayName(File file) {
         String rsl = file.getName();
 
         File parent = file.getParentFile();
@@ -239,7 +239,7 @@ public class ItemView extends ListCell<Photo> implements Observer {
         if (o == model) {
             imageView.setImage(model.getThumbnail());
             imageView.setRotate(model.getRotation());
-                        
+
             path.setText(getDisplayName(model.getFile()));
             // Show the full path as a tooltip
             pathTooltip.setText(model.getFile().toString());
@@ -247,16 +247,16 @@ public class ItemView extends ListCell<Photo> implements Observer {
             favoriteIcon.setImage(
                 model.isFavorite()
                     ? favoriteOnIcon
-                    : favoriteOffIcon);   
-            
+                    : favoriteOffIcon);
+
             tagIcon.setImage(
                 model.getTags().isEmpty()
                     ? untaggedImage
                     : tagImage);
-            
+
             int copies = model.getDb().numDuplicates(model);
             if (copies <= 1) {
-                copiesIcon.setImage(null); 
+                copiesIcon.setImage(null);
                 copiesTooltip.setText("Unique image");
             }
             else if (model.getDb().isCanonicalCopy(model)) {
@@ -285,7 +285,7 @@ public class ItemView extends ListCell<Photo> implements Observer {
             }
             tagLabel.setText(tagStr);
             */
-            
+
             if (model.getTags().isEmpty()) {
                 tagTooltip.setText("No tags");
             } else {
@@ -295,19 +295,19 @@ public class ItemView extends ListCell<Photo> implements Observer {
                 }
                 tagTooltip.setText(tagStr);
             }
-                        
+
             if (editingCaption) {
                 captionLabel.setVisible(false);
                 captionLabel.setPrefWidth(0);
                 captionLabel.setMinWidth(0);
-                
+
                 captionTextArea.setVisible(true);
                 captionTextArea.setPrefWidth(CAPTION_TEXT_WIDTH);
             }
             else if (model.getCaption() == null || model.getCaption().isEmpty()) {
                 captionTextArea.setVisible(false);
                 captionTextArea.setPrefWidth(0);
-                
+
                 captionLabel.setVisible(false);
                 captionLabel.setPrefWidth(0);
             }
@@ -315,7 +315,7 @@ public class ItemView extends ListCell<Photo> implements Observer {
                 captionTextArea.setVisible(false);
                 captionTextArea.setPrefWidth(0);
                 captionTextArea.setText(model.getCaption());
-                
+
                 captionLabel.setPrefWidth(CAPTION_TEXT_WIDTH);
                 captionLabel.setVisible(true);
                 captionLabel.setText(model.getCaption());
@@ -323,4 +323,3 @@ public class ItemView extends ListCell<Photo> implements Observer {
         }
     }
 }
-    

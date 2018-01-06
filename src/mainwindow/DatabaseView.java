@@ -21,9 +21,9 @@ import model.Photo;
 public class DatabaseView implements Observer {
 
     private Database db;
-    
+
     ObservableList<Photo> rows = FXCollections.observableArrayList();
-        
+
     public boolean filterFavorites = false;
     public boolean filterMissing = false;
     public boolean filterTagged = false;
@@ -32,24 +32,24 @@ public class DatabaseView implements Observer {
     public boolean filterOnlyExtraCopies = false;
     public boolean filterHideExtraCopies = false;
     public String filterTag = null;
-    
+
     private Comparator<Photo> sort = null;
     private boolean ascendingSort = true;
-    
+
     DatabaseView(Database db) {
         this.db = db;
-        
+
         db.addObserver(this);
     }
-    
+
     void bind(ListView<Photo> listView, ItemController controller) {
         assert(listView != null);
-        
+
         listView.setItems(rows);
-       
-        listView.setCellFactory(new Callback<ListView<Photo>, 
+
+        listView.setCellFactory(new Callback<ListView<Photo>,
             ListCell<Photo>>() {
-                @Override 
+                @Override
                 public ListCell<Photo> call(ListView<Photo> list) {
                     ItemView iv = new ItemView(controller);
                     return iv;
@@ -74,10 +74,10 @@ public class DatabaseView implements Observer {
         }
         if (filterOnlyDuplicated && (p.getDb().numDuplicates(p) <= 1)) {
             return true;
-        } 
+        }
         if (filterMissing && !p.isMissing()) {
             return true;
-        } 
+        }
         if (filterOnlyExtraCopies && p.getDb().isCanonicalCopy(p)) {
             return true;
         }
@@ -86,7 +86,7 @@ public class DatabaseView implements Observer {
         }
         return false;
     }
-    
+
     public void setSort(Comparator<Photo> sort) {
         System.out.println("DatabaseView: changed sort");
         this.sort = sort;
@@ -95,21 +95,21 @@ public class DatabaseView implements Observer {
         System.out.println("DatabaseView: changed sort");
         this.ascendingSort = ascending;
     }
-    
+
     @Override
     public void update(Observable o, Object arg) {
         if (o == db) {
             // Database changed.
             System.out.println("DatabaseView: notified of change");
-                        
+
             ArrayList<Photo> toAdd = new ArrayList<Photo>();
-            
+
             for(Photo i : db.get()) {
                 if (!isFiltered(i)) {
                     toAdd.add(i);
                 }
             }
-            
+
             if (sort != null) {
                 toAdd.sort(sort);
             }
@@ -118,7 +118,7 @@ public class DatabaseView implements Observer {
             }
 
             rows.clear();
-            rows.addAll(toAdd);          
+            rows.addAll(toAdd);
         }
     }
 }

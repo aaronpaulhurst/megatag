@@ -31,14 +31,14 @@ public class TagWindowController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
     }
-    
+
     // ----- Model -----
     Photo model;
-    
+
     // ----- Parent/Child Views -----
     MainWindowController parent;
     public void setParent(MainWindowController p) { parent = p; }
-    
+
     // ----- View Elements -----
 
     @FXML AnchorPane rootPane;
@@ -48,9 +48,9 @@ public class TagWindowController implements Initializable {
 
     public void initEvents() {
     }
-    
+
     public void setModel(Photo model) {
-    
+
         this.model = model;
 
         curTags.getChildren().clear();
@@ -59,7 +59,7 @@ public class TagWindowController implements Initializable {
         } else {
             newTags.getChildren().add(new Label("Current tags..."));
         }
-        
+
         for(String tag: model.getTags()) {
             HBox hbox = new HBox();
             hbox.setSpacing(5);
@@ -69,14 +69,14 @@ public class TagWindowController implements Initializable {
             removeButton.setOnAction(e -> {
                 // Untag specific photo
                 model.removeTag(tag);
-                
+
                 // Untag other selected items?
                 List<Photo> selected = parent.getSelected();
                 selected.remove(model);
                 if (!selected.isEmpty()) {
                     Alert alert = new Alert(
-                            AlertType.CONFIRMATION, 
-                            "Untag " + selected.size() + " other selected photos?", 
+                            AlertType.CONFIRMATION,
+                            "Untag " + selected.size() + " other selected photos?",
                             ButtonType.YES, ButtonType.NO);
                     alert.showAndWait();
 
@@ -86,16 +86,16 @@ public class TagWindowController implements Initializable {
                         }
                     }
                 }
-                
+
                 getWindow().hide();
             });
-            
+
             Label tagLabel = new Label(tag);
 
             hbox.getChildren().addAll(removeButton, tagLabel);
             curTags.getChildren().add(hbox);
         }
-        
+
         newTags.getChildren().clear();
         List<String> topTags = parent.getModel().getTopTags(5);
         // Don't suggest tags we already have
@@ -106,10 +106,10 @@ public class TagWindowController implements Initializable {
             newTags.getChildren().add(new Separator(Orientation.HORIZONTAL));
             newTags.getChildren().add(new Label("Recent tags..."));
         }
-        for (String tag : topTags) {           
+        for (String tag : topTags) {
             HBox hbox = new HBox();
             hbox.setSpacing(5);
-            
+
             Button addButton = new Button("+");
             addButton.getStyleClass().add("plus-button");
             addButton.setOnAction(e -> {
@@ -122,12 +122,12 @@ public class TagWindowController implements Initializable {
             newTags.getChildren().add(hbox);
         }
     }
-    
+
     private Window getWindow() {
         return rootPane.getScene().getWindow();
     }
-    
-    @FXML 
+
+    @FXML
     public void onAddNewTagButton(ActionEvent e) {
         String tag = addNewTagField.getText();
         System.out.println("Adding tag: "+tag);
@@ -136,30 +136,30 @@ public class TagWindowController implements Initializable {
         addNewTagField.clear();
         getWindow().hide();
     }
-    
-    @FXML 
+
+    @FXML
     public void onAddNewTagField(ActionEvent e) {
         String tag = addNewTagField.getText();
         System.out.println("Adding tag: "+tag);
         tagModelAndMaybeOtherSelections(tag);
-        
+
         addNewTagField.clear();
         getWindow().hide();
     }
-    
+
     // --- Helpers ---
-    
+
     private void tagModelAndMaybeOtherSelections(String tag) {
         // Add tag to specific row
         model.addTag(tag);
-        
+
         // Add tag to other selected items?
         List<Photo> selected = parent.getSelected();
         selected.remove(model);
         if (!selected.isEmpty()) {
             Alert alert = new Alert(
-                    AlertType.CONFIRMATION, 
-                    "Tag " + selected.size() + " other selected photos?", 
+                    AlertType.CONFIRMATION,
+                    "Tag " + selected.size() + " other selected photos?",
                     ButtonType.YES, ButtonType.NO);
             alert.showAndWait();
 

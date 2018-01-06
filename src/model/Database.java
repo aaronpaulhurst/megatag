@@ -20,9 +20,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 
 public class Database extends Observable {
-    
+
     final static String EXTENSIONS[] = {"jpg", "JPG", "jpeg", "JPEG"};
-    
+
     public static boolean isImageExtension(String file) {
         for(String suffix : EXTENSIONS) {
             if (file.endsWith("." + suffix)) {
@@ -31,38 +31,38 @@ public class Database extends Observable {
         }
         return false;
     }
-    
+
     ArrayList<File> searchRoots = new ArrayList<File>();
-    
+
     Collection<Photo> images = new HashSet<Photo>();
     boolean modified = false;
-    
+
     class Deduplication implements Comparable {
         Photo canonical;
         int num;
-        
+
         Deduplication(Photo p) {
             canonical = p;
             num = 1;
         }
-        
+
         @Override
         public int compareTo(Object o) {
             if (o instanceof Deduplication) {
-                return canonical.getHash() - 
+                return canonical.getHash() -
                     ((Deduplication)o).canonical.getHash();
             }
             return 0;
         }
     };
     TreeSet<Deduplication> deduplication = new TreeSet<Deduplication>();
-    
+
     Map<String, Integer> tagCounts = new TreeMap<String, Integer>();
-    
+
     Object lock = new Object();
-    
+
     public int size() { return images.size(); }
-    
+
     public int numDistinct() { return deduplication.size(); }
     public boolean isCanonicalCopy(Photo p) {
         Deduplication lookup = new Deduplication(p);
@@ -72,7 +72,7 @@ public class Database extends Observable {
         }
         return false; // Huh?
     }
-    public int numDuplicates(Photo p) { 
+    public int numDuplicates(Photo p) {
         Deduplication lookup = new Deduplication(p);
         Deduplication floor = deduplication.floor(lookup);
         if (floor != null && floor.compareTo(lookup) == 0) {
@@ -84,7 +84,7 @@ public class Database extends Observable {
     public Collection<Photo> get() {
         return images;
     }
-    
+
     public List<String> getTopTags(int num) {
         List<String> rsl = new ArrayList<String>();
         for(String tag : tagCounts.keySet()) {
@@ -95,11 +95,11 @@ public class Database extends Observable {
         }
         return rsl;
     }
-    
+
     public Map<String, Integer> getAllTags() {
         return tagCounts;
     }
-    
+
     public void incTag(String tag, int delta) {
         int val = delta;
         if (tagCounts.containsKey(tag)) {
@@ -107,33 +107,33 @@ public class Database extends Observable {
         }
         tagCounts.put(tag, val);
     }
-    
+
     public void addFiles(List<File> list) {
         if (list == null) {
             return;
         }
-        
+
         for(File f : list) {
             importFile(f);
         }
-        
+
         notifyObservers();
     }
-    
+
     public void addSearchRoot(File root, StringProperty progressMessage) {
         synchronized(lock) {
             searchRoots.add(root);
-        }   
-            
+        }
+
         Task<Void> task = new Task<Void>() {
             @Override public Void call() {
                 updateMessage("Starting scan...");
-                                
+
                 try {
                     Files.walkFileTree(root.toPath(), new SimpleFileVisitor<Path>()
                     {
                         int numFiles = 0;
-                        
+
                         @Override
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                             if (attrs.isRegularFile() && isImageExtension(file.toString())) {
@@ -151,34 +151,34 @@ public class Database extends Observable {
                 return null;
             }
         };
-  
+
         progressMessage.unbind();
-        progressMessage.bind(task.messageProperty());        
+        progressMessage.bind(task.messageProperty());
 
         task.setOnSucceeded(e -> { notifyObservers(); });
-        
+
         new Thread(task).start();
     }
-   
+
     public void deleteItems(Collection<Photo> toDelete) {
         synchronized(lock) {
             for(Photo p: toDelete) {
-                p.removeAllTags();            
+                p.removeAllTags();
                 images.remove(p);
             }
-            
+
             // Redo deduplication from scratch
             deduplication.clear();
             for(Photo p : images) {
                 addToDeduplication(p);
             }
         }
-               
+
         setChangedSinceSave();
         setChanged();
         notifyObservers();
     }
-    
+
     private void addToDeduplication(Photo p) {
         Deduplication lookup = new Deduplication(p);
         Deduplication floor = deduplication.floor(lookup);
@@ -192,10 +192,10 @@ public class Database extends Observable {
     }
 
     // --- serialization / deserialization ---
-    
+
     public void write(OutputStream os) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        
+
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 
         //Object to JSON in file
@@ -209,14 +209,14 @@ public class Database extends Observable {
             throw new IOException("JSON Error");
         }
     }
-    
+
     public void read(InputStream is) throws IOException {
-        ArrayList<Photo> readImages = 
-                new ObjectMapper().readValue(is, 
+        ArrayList<Photo> readImages =
+                new ObjectMapper().readValue(is,
                         new TypeReference<ArrayList<Photo>>() { });
-        
+
         System.out.println("Read " + readImages.size() + " images");
-        
+
         for(Photo p : readImages) {
             p.finishInit(this);
 
@@ -229,32 +229,32 @@ public class Database extends Observable {
                 }
             }
         }
-        
+
         setChanged();
         notifyObservers();
     }
-    
+
     // -- internal --
-    
+
     // Caller should notify observers.
     private void importFile(File f) {
         synchronized(lock) {
             Photo p = new Photo(f, this);
-            images.add(p);  
+            images.add(p);
             addToDeduplication(p);
         }
         setChangedSinceSave();
         setChanged();
     }
-    
+
     private void rescan() {
         // TODO
-        
+
         notifyObservers();
     }
-    
+
     // Called if when any image in the database has been modified.
-    
+
     public void setChangedSinceSave() {
         modified = true;
     }

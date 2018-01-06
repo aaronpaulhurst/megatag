@@ -37,9 +37,9 @@ public class ImageWindowController implements Initializable, Observer {
         maxWidth = primaryScreenBounds.getWidth() - 200;
         maxHeight = primaryScreenBounds.getHeight() - 200;
     }
-    
+
     ScheduledFuture resizeFuture = null;
-    
+
     public void initEvents() {
         Scene scene = mainImageView.getScene();
         Window window =scene.getWindow();
@@ -50,49 +50,49 @@ public class ImageWindowController implements Initializable, Observer {
             if (resizeFuture != null) {
                 resizeFuture.cancel(false);
             }
-            
+
             resizeFuture = application.Main.getThreadPool().schedule(() -> {
                 maxHeight = window.getHeight();
                 maxWidth = window.getWidth();
                 resize();
             }, 100, TimeUnit.MILLISECONDS);
         });
-        
+
         window.heightProperty().addListener((obs, oldVal, newVal) -> {
             if (resizeFuture != null) {
                 resizeFuture.cancel(false);
             }
-            
+
             resizeFuture = application.Main.getThreadPool().schedule(() -> {
                 maxHeight = window.getHeight();
                 maxWidth = window.getWidth();
                 resize();
             }, 100, TimeUnit.MILLISECONDS);
-        });        
+        });
     }
 
     double maxWidth = -1, maxHeight = -1;
-    
+
     @FXML ImageView mainImageView;
-    
+
     // ----- Model -----
     Photo current;
-    
+
     // ----- Parent/Child Views -----
     MainWindowController parent;
     public void setParent(MainWindowController p) { parent = p; }
-    
+
     // ----- Controller -----
-    
+
     private void resize() {
         Image img = mainImageView.getImage();
         if (img == null) {
             return;
         }
-        
+
         double imgWidth = img.getWidth();
         double imgHeight = img.getHeight();
-        
+
         int rot = (int)mainImageView.getRotate();
         if ((rot % 180) == 90 ||
             (rot % 180) == -90)
@@ -101,7 +101,7 @@ public class ImageWindowController implements Initializable, Observer {
             imgWidth = imgHeight;
             imgHeight = swap;
         }
-            
+
         // Constraint 1: Bound by window size
         // Constraint 2: Shrink to image
         double newWidth = Math.min(imgWidth, maxWidth);
@@ -120,21 +120,21 @@ public class ImageWindowController implements Initializable, Observer {
         } else {
             mainImageView.setY(0);
         }
-        
+
         // Resize image view
         mainImageView.setFitWidth(newWidth);
         mainImageView.setFitHeight(newHeight);
     }
-    
+
     public void setImage(Photo img) {
-        
+
         if (img != null) {
             img.deleteObserver(this);
         }
-        
+
         current = img;
         current.addObserver(this);
-        
+
         try (FileInputStream fis = new FileInputStream(current.getFile())) {
             mainImageView.setImage(new Image(fis));
             mainImageView.setRotate(img.getRotation());
@@ -143,13 +143,13 @@ public class ImageWindowController implements Initializable, Observer {
         }catch (IOException ex) {
             // Do nothing
         }
-        
+
         resize();
     }
-    
+
     @FXML void onKeyPressed(KeyEvent e) {
         System.out.println("Key pressed in image window");
-        
+
         KeyCode key = e.getCode();
         switch(key) {
         case LEFT:
@@ -166,8 +166,8 @@ public class ImageWindowController implements Initializable, Observer {
         case SPACE:
             parent.nextPhoto();
             e.consume();
-            break;            
-        }       
+            break;
+        }
     }
 
     @Override
