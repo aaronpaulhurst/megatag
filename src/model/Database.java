@@ -215,6 +215,7 @@ public class Database extends Observable {
 
     public void read(InputStream is) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
 
         ArrayList<Photo> readImages = mapper.readValue(is,

@@ -33,14 +33,6 @@ public class MainController implements Initializable, ItemController {
 
         getDatabaseView().bind(listView, this);
 
-        // Read database
-        try (FileInputStream is = new FileInputStream(Main.DB_FILE)) {
-            getDatabase().read(is);
-        } catch (IOException ex) {
-            // Ignore
-            System.out.println("Could not read existing database: " + ex.toString());
-        }
-
         loadChildViews();
 
         menuBarPaneController.setParent(this);
@@ -333,6 +325,15 @@ public class MainController implements Initializable, ItemController {
             Alert a = new Alert(AlertType.ERROR);
             a.setContentText("Failed to save database");
             a.showAndWait();
+        }
+    }
+
+    public void load() {
+        try (FileInputStream is = new FileInputStream(Main.DB_FILE)) {
+            getDatabase().read(is);
+        } catch (IOException ex) {
+            // Ignore
+            System.out.println("Could not read existing database: " + ex.toString());
         }
     }
 
