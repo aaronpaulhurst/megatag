@@ -6,6 +6,7 @@ import java.net.URL;
 import application.Main;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.*;
 import javafx.scene.*;
@@ -328,13 +329,36 @@ public class MainController implements Initializable, ItemController {
         }
     }
 
-    public void load() {
-        try (FileInputStream is = new FileInputStream(Main.DB_FILE)) {
-            getDatabase().read(is);
-        } catch (IOException ex) {
-            // Ignore
-            System.out.println("Could not read existing database: " + ex.toString());
-        }
+    // Load a database.
+    // Does not need to be run
+    public void load(File dbFile) {
+        db.clear();
+
+        // Run in a separate thread
+        Task<Void> task = new Task<Void>() {
+            @Override public Void call() {
+
+                try (FileInputStream is = new FileInputStream(dbFile)) {
+                    getDatabase().read(is, (String msg) -> { updateMessage(msg); });
+                } catch (IOException ex) {
+                    // Ignore
+                    System.out.println("Could not read existing database: " + ex.toString());
+                }
+
+                return null;
+            }
+        };
+
+        getMessageProperty().unbind();
+        getMessageProperty().bind(task.messageProperty());
+
+        task.setOnSucceeded(e -> {
+            // Database.read already notifies observers
+            getMessageProperty().unbind();
+            getMessageProperty().set("Total = " + getDatabase().size() + " images.");
+        });
+
+        new Thread(task).start();
     }
 
     // ----- Helpers -----

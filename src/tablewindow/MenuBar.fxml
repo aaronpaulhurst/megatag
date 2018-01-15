@@ -25,6 +25,9 @@
 							</accelerator>
 						</MenuItem>
 						<SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#onClearMenuItem" text="Clear" />
+                  <MenuItem mnemonicParsing="false" onAction="#onUpdateMenuItem" text="Update" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
 						<MenuItem mnemonicParsing="false" onAction="#onSaveMenuItem" text="Save">
 							<accelerator>
 								<KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="UP" shortcut="DOWN" />

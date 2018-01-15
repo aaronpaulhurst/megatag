@@ -53,6 +53,7 @@ public class Main extends Application {
             primaryStage.setOnCloseRequest(e -> Platform.exit());
             primaryStage.setTitle("Megatag");
             primaryStage.show();
+
             primaryController = (MainController)loader.getController();
         } catch (Exception e) {
             // Fail hard
@@ -60,15 +61,8 @@ public class Main extends Application {
             Main.exit();
         }
 
-        // Load database in another thread
-        final MainController primaryController2 = primaryController;
-        Task<Void> task = new Task<Void>() {
-            @Override public Void call() {
-                primaryController2.load();
-                return null;
-            }
-        };
-        new Thread(task).start();
+        // Load database
+        primaryController.load(DB_FILE);
     }
 
     @Override

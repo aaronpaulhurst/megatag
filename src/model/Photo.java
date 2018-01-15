@@ -47,13 +47,17 @@ public class Photo extends Observable {
 
     public Photo(File file, Database db) {
         this.file = file;
-        finishInit(db);
+        this.db = db;
+        readTransient();
         readMetadata();
     }
 
-    public void finishInit(Database db) {
+    public void setDatabase(Database db) {
         this.db = db;
+    }
 
+    // Read data from disk that is not persisted as part of database
+    public void readTransient() {
         if (!file.exists()) {
             missing = true;
             return;
@@ -152,7 +156,7 @@ public class Photo extends Observable {
         db.setChangedSinceSave();
     }
 
-    private void readMetadata() {
+    public void readMetadata() {
         try {
             Metadata metadata = ImageMetadataReader.readMetadata(file);
 

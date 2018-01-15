@@ -5,7 +5,11 @@ import java.nio.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+import java.util.function.Consumer;
 
+import javax.annotation.Nullable;
+
+import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 import javafx.scene.Scene;
@@ -36,7 +40,7 @@ public class Database extends Observable {
 
     ArrayList<File> searchRoots = new ArrayList<File>();
 
-    Collection<Photo> images = new HashSet<Photo>();
+    Map<File, Photo> images = new HashMap<File, Photo>();
     boolean modified = false;
 
     class Deduplication implements Comparable {
@@ -84,7 +88,13 @@ public class Database extends Observable {
     }
 
     public Collection<Photo> get() {
-        return images;
+        // Copy to avoid any problems by callers iterating during map modification
+        final Vector<Photo> result;
+        synchronized(lock) {
+            result = new Vector<Photo>(images.values());
+        }
+
+        return result;
     }
 
     public List<String> getTopTags(int num) {
@@ -110,19 +120,38 @@ public class Database extends Observable {
         tagCounts.put(tag, val);
     }
 
-    public void addFiles(List<File> list) {
+    public void addFiles(List<File> list, @Nullable StringProperty progressMessage) {
         if (list == null) {
             return;
         }
 
-        for(File f : list) {
-            importFile(f);
+        Task<Void> task = new Task<Void>() {
+            @Override public Void call() {
+                for(File f : list) {
+                    importFile(f);
+                }
+                return null;
+            }
+        };
+
+        if (progressMessage != null) {
+            progressMessage.unbind();
+            progressMessage.bind(task.messageProperty());
         }
 
-        notifyObservers();
+        task.setOnSucceeded(e -> {
+            // The database is marked changed inside 'importFile'.
+            notifyObservers();
+
+            progressMessage.unbind();
+            progressMessage.set("Total = " + size() + " images.");
+        });
+
+        new Thread(task).start();
     }
 
-    public void addSearchRoot(File root, StringProperty progressMessage) {
+    public void addSearchRoot(File root, @Nullable StringProperty progressMessage)
+    {
         synchronized(lock) {
             searchRoots.add(root);
         }
@@ -149,15 +178,23 @@ public class Database extends Observable {
                 } catch (IOException ex) {
                     // Give up.
                 }
-                updateMessage("Total = " + images.size() + " images.");
+                updateMessage("Total = " + size() + " images.");
                 return null;
             }
         };
 
-        progressMessage.unbind();
-        progressMessage.bind(task.messageProperty());
+        if (progressMessage != null) {
+            progressMessage.unbind();
+            progressMessage.bind(task.messageProperty());
+        }
 
-        task.setOnSucceeded(e -> { notifyObservers(); });
+        task.setOnSucceeded(e -> {
+            setChanged();
+            notifyObservers();
+
+            progressMessage.unbind();
+            progressMessage.set("Total = " + size() + " images.");
+        });
 
         new Thread(task).start();
     }
@@ -166,12 +203,12 @@ public class Database extends Observable {
         synchronized(lock) {
             for(Photo p: toDelete) {
                 p.removeAllTags();
-                images.remove(p);
+                images.remove(p.getFile());
             }
 
             // Redo deduplication from scratch
             deduplication.clear();
-            for(Photo p : images) {
+            for(Photo p : images.values()) {
                 addToDeduplication(p);
             }
         }
@@ -179,6 +216,47 @@ public class Database extends Observable {
         setChangedSinceSave();
         setChanged();
         notifyObservers();
+    }
+
+    // Repopulate all data from photo files.
+    // Useful if any photos have been changed.
+    public void refreshAll( @Nullable StringProperty progressMessage )
+    {
+        Task<Void> task = new Task<Void>() {
+            @Override public Void call() {
+                updateMessage("Starting refresh...");
+
+                // Copy to avoid holding lock
+                final Vector<Photo> copy;
+                synchronized(lock) {
+                    copy = new Vector<Photo>(images.values());
+                }
+
+                int count = 0;
+                for(Photo p : copy) {
+                    p.readTransient();
+                    p.readMetadata();
+                    count += 1;
+                    updateMessage("Refreshed " + count + " of " + size() + " images");
+                }
+
+                // TODO: Need to recompute deduplication if hashes changed.
+
+                return null;
+            }
+        };
+
+        if (progressMessage != null) {
+            progressMessage.unbind();
+            progressMessage.bind(task.messageProperty());
+        }
+
+        task.setOnSucceeded(e -> {
+            setChanged();
+            notifyObservers();
+        });
+
+        new Thread(task).start();
     }
 
     private void addToDeduplication(Photo p) {
@@ -193,6 +271,19 @@ public class Database extends Observable {
         }
     }
 
+    public void clear() {
+        synchronized(lock) {
+            deduplication.clear();
+            images.clear();
+            searchRoots.clear();
+            tagCounts.clear();
+        }
+
+        setChangedSinceSave();
+        setChanged();
+        notifyObservers();
+    }
+
     // --- serialization / deserialization ---
 
     public void write(OutputStream os) throws IOException {
@@ -201,9 +292,17 @@ public class Database extends Observable {
 
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 
-        //Object to JSON in file
+        // Copy to avoid holding lock
+        final Vector<Photo> copy;
+        synchronized(lock) {
+            copy = new Vector<Photo>(images.values());
+        }
+
+        // TODO: Run in separate thread?
+
+        // Object to JSON in file
         try {
-            mapper.writeValue(os, images);
+            mapper.writeValue(os, copy);
         } catch (JsonMappingException ex) {
             System.out.println("JSON error: " + ex.toString());
             throw new IOException("JSON Error");
@@ -213,7 +312,10 @@ public class Database extends Observable {
         }
     }
 
-    public void read(InputStream is) throws IOException {
+    public void read(InputStream is, Consumer<String> message) throws IOException
+    {
+        message.accept("Reading database");
+
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new JavaTimeModule());
@@ -223,17 +325,24 @@ public class Database extends Observable {
 
         System.out.println("Read " + readImages.size() + " images");
 
+        int count = 0;
         for(Photo p : readImages) {
-            p.finishInit(this);
+            p.setDatabase(this);
+            p.readTransient();
+            count += 1;
 
             synchronized(lock) {
-                images.add(p);
-                addToDeduplication(p);
+                if (!images.containsKey(p.getFile())) {
+                    images.put(p.getFile(), p);
+                    addToDeduplication(p);
 
-                for(String tag : p.getTags()) {
-                    incTag(tag, 1);
+                    for(String tag : p.getTags()) {
+                        incTag(tag, 1);
+                    }
                 }
             }
+
+            message.accept("Loaded " + count + " of " + readImages.size() + " files");
         }
 
         setChanged();
@@ -245,12 +354,15 @@ public class Database extends Observable {
     // Caller should notify observers.
     private void importFile(File f) {
         synchronized(lock) {
-            Photo p = new Photo(f, this);
-            images.add(p);
-            addToDeduplication(p);
+            if (!images.containsKey(f)) {
+                Photo p = new Photo(f, this);
+                images.put(f, p);
+                addToDeduplication(p);
+
+                setChangedSinceSave();
+                setChanged();
+            }
         }
-        setChangedSinceSave();
-        setChanged();
     }
 
     private void rescan() {

@@ -233,15 +233,34 @@ public class MenuController implements Initializable {
         chooser.setTitle("Open Images");
         List<File> list = chooser.showOpenMultipleDialog(getWindow());
 
-        getDatabase().addFiles(list);
-
-        parent.getMessageProperty().unbind();
-        parent.getMessageProperty().set("Total = " + getDatabase().size() + " images.");
+        getDatabase().addFiles(list, parent.getMessageProperty());
     }
 
     @FXML private void onSaveMenuItem(ActionEvent e) {
         System.out.println("Event: onSaveMenuItem");
         parent.save();
+    }
+
+    @FXML private void onClearMenuItem(ActionEvent e) {
+        System.out.println("Event: onClearMenuItem");
+
+        Alert alert = new Alert(
+                AlertType.CONFIRMATION,
+                "Clear everything?  All information will be discarded.",
+                ButtonType.YES, ButtonType.CANCEL);
+        alert.showAndWait();
+
+        if (alert.getResult() != ButtonType.YES) {
+            return;
+        }
+
+        parent.getDatabase().clear();
+    }
+
+    @FXML private void onUpdateMenuItem(ActionEvent e) {
+        System.out.println("Event: onUpdateMenuItem");
+
+        parent.getDatabase().refreshAll(parent.getMessageProperty());
     }
 
     @FXML private void onFilterClearMenuItem(ActionEvent e) {
